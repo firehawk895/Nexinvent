@@ -1,0 +1,448 @@
+This document elictates the APIs that have been clearly identified
+1. POST /login [Login to the system]
+{
+    email: "ghoda@mailinator.com",
+    password: "modamuadasdasd"
+}
+{
+    //auth user data
+}
+
+2. GET /orders?page=1,count=50 [Order History screen display]
+Also can be called with filter and search parameters:
+GET /orders?search="Baba"&status="submitted,accepted"&supplier_id=23&employee_id=23,start_date=123213123&end_date=123123
+Legend: Client refers to restaurant
+{
+    "data": [{
+		"creationDateString": "Nov 11, 2018 01:57 AM",
+		"orderId": 27479709,
+		"clientId": 16553369,
+		"vendorId": 26837724,
+		"createdDateTime": 1541919425343,
+		"modifiedDateTime": 1541919425343,"
+		"clientName": "Crustos",
+		"vendorName": "ORGANO FRESH",
+		"vendorInvoiceNumber": "26729",
+		"deliveryCharge": 0.0,
+		"currency": "Rs $",
+		"status": "CheckedIn",
+		"orderTotal": 1009.2,
+		"hasOrderComments": false,
+		"hasProductNotes": false,
+		"priceChangedDuringCheckIn": false
+	}]
+	"warnings": [],
+	"errors": [],
+	"errorMessage": null
+}
+
+3. GET /order_aggregate
+{
+  "total_orders": 11,
+  "total_order_value": 58434,
+  "total_suppliers": 6,
+  "total_inventory_items": 52,
+  "warnings": [],
+  "errors": [],
+  "errorMessage": null
+}
+
+4. GET /products [display products so that order can be placed]
+Also can be called with filter and search params:
+GET /products?search=doodh"&vendorIds=1,2,3&in_use=true&
+Identify restaurant explicitly by passing ID or through auth token, so that you can get
+associated vendor products
+{
+	"data": [{
+		"price": 336.0,
+		"productId": 26835558,
+		"productName": "Amul Pizza Cheese",
+		"uom": "kg",
+		"sku": "0406000",
+		"imageUrl": "https://s3-us-west-2.amazonaws.com/improvoniatest/new+folder/default.png",
+		"vendorId": 26835556,
+		"vendorName": "Jagat Singh",
+		"description": "",
+		"originalPrice": 336.0
+	}, {
+		"price": 98.0,
+		"productId": 26837749,
+		"productName": "BABY CORN",
+		"uom": "kg",
+		"sku": "12",
+		"imageUrl": "https://s3-us-west-2.amazonaws.com/improvoniatest/new+folder/default.png",
+		"vendorId": 26837724,
+		"vendorName": "ORGANO FRESH",
+		"description": "",
+		"originalPrice": 98.0
+	}, {
+		"price": 788.0,
+		"productId": 26836661,
+		"productName": "BACON",
+		"uom": "kg",
+		"sku": "160241002",
+		"imageUrl": "https://s3-us-west-2.amazonaws.com/improvoniatest/new+folder/default.png",
+		"vendorId": 26836656,
+		"vendorName": "sbs",
+		"description": "",
+		"originalPrice": 788.0
+	}, {
+		"price": 165.0,
+		"productId": 26837753,
+		"productName": "BASIL",
+		"uom": "kg",
+		"sku": "14",
+		"imageUrl": "https://s3-us-west-2.amazonaws.com/improvoniatest/new+folder/default.png",
+		"vendorId": 26837724,
+		"vendorName": "ORGANO FRESH",
+		"description": "",
+		"originalPrice": 165.0
+	}],
+	"notes": [],
+	"warnings": [],
+	"errors": [],
+	"errorMessage": null
+}
+
+5. GET /associatedVendors
+Identify restaurant explicitly by passing ID or through auth token of employee
+[{
+    "vendorName":
+    "vendorId":
+}]
+
+6. POST /cart/updatecartwithresponse/ (update the cart when qty and add button clicked)
+Use this for onclicking of RE-ORDER button as well
+[{
+	"updated_by": "feraasd@gmail.com",
+	"product_id": 26835558,
+	"quantity": 2,
+	"note": ""
+}]
+
+7. GET /cart/ (get the current cart, orders not yet sent)
+ALSO THIS EXACT SAME API IS USED TO RENDER THE CHECKOUT PAGE, and generate subtotals in the front end
+SENT ORDERS DONT APPEAR IN CART
+{
+	"data": [{
+		"creationDate": "2018-11-12",
+		"createdBy": "feraasd@gmail.com",
+		"price": 98.0,
+		"productId": 26837749,
+		"productName": "BABY CORN",
+		"uom": "kg",
+		"sku": "12",
+		"vendorId": 26837724,
+		"originalPrice": 98.0,
+		"clientId": 16553369,
+		"quantity": 1.0,
+		"customPrice": 0.0
+	}, {
+		"creationDate": "2018-11-12",
+		"createdBy": "feraasd@gmail.com",
+		"price": 788.0,
+		"productId": 26836661,
+		"productName": "BACON",
+		"uom": "kg",
+		"sku": "160241002",
+		"vendorId": 26836656,
+		"originalPrice": 788.0,
+		"clientId": 16553369,
+		"quantity": 3.0,
+		"customPrice": 0.0
+	}, {
+		"creationDate": "2018-11-12",
+		"createdBy": "feraasd@gmail.com",
+		"price": 336.0,
+		"productId": 26835558,
+		"productName": "Amul Pizza Cheese",
+		"uom": "kg",
+		"sku": "0406000",
+		"vendorId": 26835556,
+		"originalPrice": 336.0,
+		"clientId": 16553369,
+		"quantity": 2.0,
+		"customPrice": 0.0
+	}],
+	"notes": [],
+	"warnings": [],
+	"errors": [],
+	"errorMessage": null
+}
+
+so after doing a post on an item on the cart, it calls getcart again to refresh cart items. pretty easy that way.
+
+more Checkout Page stuff
+8. GET client/shippingaddress/16553369
+{
+	"id": 20089037,
+	"clientId": 16553369,
+	"address1": "15B",
+	"address2": "Masjid Moth",
+	"city": "NEW DELHI",
+	"state": "AR",
+	"zip": "71630",
+	"countryCode": "USA",
+	"enabled": true,
+	"creationDate": 1528655494000,
+	"lastUpdatedDate": null,
+	"createdBy": "feraasd@gmail.com",
+	"lastUpdatedBy": "feraasd@gmail.com",
+	"addressStatus": "notValidated",
+	"addressErrorCode": "validationNotRequested",
+	"addressNotes": null,
+	"addressWarnings": null,
+	"addressErrors": null,
+	"addressApiWarnings": null
+}
+
+9. POST /orders/new
+
+this API can take multiple request payloads for the "Send all orders" button
+request payload:
+note that the product details are being sent again in the request payload because the quantity can still be changed at this level and new products can be added.
+you cannot take the backend cart and process the orders further. the request payload must have all details.
+after I sent out this Jagat singh guy's order, If i do a back to see my cart again.
+I see the cart no longer has jagat singhs products. only the other 2 out of 3 vendors products are remaining. so sending an order partially clears the cart.
+reqDD is requested delivery date i guess or type.
+
+{
+	"os_version": "Web",
+	"user_id": 16553368,
+	"client_id": 16553369,
+	"app_version": "Web",
+	"device_id": "Web",
+	"device_version": "Web",
+	"data": [{
+		"delivery_charge": 0,
+		"vendor_name": "sbs",
+		"reqDD": null,
+		"comment": null,
+		"vendor_id": "26836656",
+		"products": [{
+			"product_id": "26836661",
+			"quantity": 3,
+			"vendor_id": "26836656",
+			"price": 788,
+			"created": null
+		}]
+	}, {
+		"delivery_charge": 0,
+		"vendor_name": "ORGANO FRESH",
+		"reqDD": null,
+		"comment": null,
+		"vendor_id": "26837724",
+		"products": [{
+			"product_id": "26837749",
+			"quantity": 1,
+			"vendor_id": "26837724",
+			"price": 98,
+			"created": null
+		}, {
+			"product_id": "26837753",
+			"quantity": 1,
+			"vendor_id": "26837724",
+			"price": 165,
+			"created": null
+		}]
+	}]
+}
+
+Reponse:
+[{"vendorId":26836656,"vendorName":"sbs","orderId":27522275},{"vendorId":26837724,"vendorName":"ORGANO FRESH","orderId":27522276}]
+
+API sends out email.
+
+10. POST csv/uploadInventory?url= (take file or url) -> parse csv and upload back or whatever
+
+11. GET orders/3123123 (order details)
+{
+	"data": {
+		"creationDate": 1543392578012,
+		"orderId": 28216457,
+		"clientId": 16553369,
+		"vendorId": 16553561,
+		"placedByEmail": "crustosindia@gmail.com",
+		"clientUserId": 26835500,
+		"vendorUserId": 0,
+		"clientName": "Crustos",
+		"vendorName": "HK Flesh Meat Supplies",
+		"clientCreationDate": 1540798325000,
+		"vendorInvoiceNumber": "164",
+		"deliveryCharge": 0.0,
+		"currency": "USD $",
+		"status": "CheckedIn",
+		"needsReview": false,
+		"discountValue": 0.0,
+		"checkedinBy": "crustosindia@gmail.com",
+		"checkedinDate": 1543392610000,
+		"orderTotal": 950.0,
+		"hasOrderComments": false,
+		"hasProductNotes": false,
+		"orderCount": 0,
+		"clientShippingAddress": {
+			"address": "15B",
+			"address2": "Masjid Moth",
+			"city": "NEW DELHI",
+			"state": "AR",
+			"zip": "71630",
+			"phone": null
+		},
+		"clientBillingAddress": {
+			"address": null,
+			"address2": null,
+			"city": null,
+			"state": null,
+			"zip": null,
+			"phone": null
+		},
+		"vendorBillingAddress": {
+			"address": null,
+			"address2": null,
+			"city": null,
+			"state": "----------",
+			"zip": "00000",
+			"phone": null
+		},
+		"products": [{
+			"price": 280.0,
+			"productId": 26836498,
+			"productName": "CHICKEN THAI",
+			"uom": "kg",
+			"sku": "065",
+			"vendorId": 16553561,
+			"isPriceByWeight": false,
+			"originalPrice": 280.0,
+			"availability": "Available",
+			"basePrice": 280.0,
+			"lineId": 2,
+			"quantity": 1.9,
+			"status": "CheckedIn",
+			"totalPrice": 532.0,
+			"isProductTaxable": false,
+			"checkedinQuantity": 1.9,
+			"checkedinStatus": "Received(Full)",
+			"credit": 0.0,
+			"originalQuantity": 1.9
+		}, {
+			"price": 220.0,
+			"productId": 16553564,
+			"productName": "Chicken (Whole)",
+			"uom": "kg",
+			"sku": "063",
+			"vendorId": 16553561,
+			"isPriceByWeight": false,
+			"originalPrice": 220.0,
+			"availability": "Available",
+			"basePrice": 220.0,
+			"lineId": 1,
+			"quantity": 1.9,
+			"status": "CheckedIn",
+			"totalPrice": 418.0,
+			"isProductTaxable": false,
+			"checkedinQuantity": 1.9,
+			"checkedinStatus": "Received(Full)",
+			"credit": 0.0,
+			"originalQuantity": 1.9
+		}],
+		"standingOrder": false
+	},
+	"notes": [],
+	"warnings": [],
+	"errors": [],
+	"errorMessage": null
+}
+
+12. PATCH orders/3123123 (order details)
+edit payment status, invoice number, PO number, add order message.
+
+13. GET /orders/28225523?clientId=16553369 [Order Checkin GET details wala API]
+[{
+	"vendor": 26837724,
+	"data": [{
+		"lineId": 1,
+		"deviceId": "Web",
+		"productId": 26837749,
+		"quantity": 5.0,
+		"orderId": 28225523,
+		"creationDate": "Nov 28, 2018 11:04 AM",
+		"clientId": 16553369,
+		"clientAddress": "15B",
+		"clientAddress2": "Masjid Moth",
+		"clientCity": "NEW DELHI",
+		"clientState": "AR",
+		"clientZip": "71630",
+		"vendorId": 26837724,
+		"vendorName": "ORGANO FRESH",
+		"status": "New",
+		"sku": "12",
+		"productName": "BABY CORN",
+		"imageName": "null",
+		"uom": "kg",
+		"basePrice": 98.0,
+		"isPercentage": "null",
+		"discountValue": 0.0,
+		"totalPrice": 490.0,
+		"price": 98.0,
+		"deliveryCharge": 0.0,
+		"userName": "feraasd@gmail.com",
+		"createdDateTime": 1543421095708,
+		"checkinNote": "null",
+		"checkedinBy": "null",
+		"checkedinStatus": "null",
+		"clientUserId": 16553368,
+		"vendorUserId": 0,
+		"currency": "USD $"
+	}]
+}]
+
+14. Order Checkin karney wala API
+POST apiv2/ordercheckin/newCheckin/28225523?clientId=16553369
+[{
+	"productId": 26837749,
+	"price": 98,
+	"qty": 4,
+	"createdBy": "feraasd@gmail.com",
+	"status": "Received(Partial)",
+	"note": "sdasdasd",
+	"credit": -98,
+	"productName": "BABY CORN",
+	"uom": "kg",
+	"sku": "12",
+	"deliveryCharge": 0,
+	"totalPrice": 392
+}]
+
+15. PATCH /apiv2/orders/updatecheckindeliverydate/28225523
+{
+	"checkin_delivery_date": "11-28-2018",
+	"updated_by": "feraasd@gmail.com",
+	"user_id": 16553368
+}
+
+16. PATCH /apiv2/orders/saveinvoicenumber/?orderId=28225523&invoiceNumber=123123123
+{ "response" : "Success" }
+
+17. GET apiv2/ordercheckin/getCheckinImages/28225523?productId=2683774
+[{
+	"id": 18833,
+	"orderId": 28225523,
+	"productId": 26837749,
+	"filePath": "https://s3.amazonaws.com/bc-ord/743ded61f89b4d1f9a2622ccb57bf7ca/2018-11-28 11:08:19.998.png",
+	"fileName": "Screenshot 2018-11-27 15.13.28.png",
+	"creationDate": 1543421299998,
+	"createdBy": "feraasd@gmail.com",
+	"orgId": null
+}, {
+	"id": 18834,
+	"orderId": 28225523,
+	"productId": 26837749,
+	"filePath": "https://s3.amazonaws.com/bc-ord/04b13fea6239497cac91a582fe13f51e/2018-11-28 11:08:27.632.png",
+	"fileName": "Screenshot 2018-11-28 17.36.20.png",
+	"creationDate": 1543421307632,
+	"createdBy": "feraasd@gmail.com",
+	"orgId": null
+}]
+
+18. POST apiv2/ordercheckin/addImage/
+{"imageName" : "https://s3.amazonaws.com/bc-ord/743ded61f89b4d1f9a2622ccb57bf7ca/2018-11-28 11:08:19.998.png"}

@@ -2689,3 +2689,207 @@ Reponse:
 [{"vendorId":26836656,"vendorName":"sbs","orderId":27522275},{"vendorId":26837724,"vendorName":"ORGANO FRESH","orderId":27522276}]
 
 
+GET /apiv2/orders/clientOrderDetails/28216457
+{
+	"data": {
+		"creationDate": 1543392578012,
+		"orderId": 28216457,
+		"clientId": 16553369,
+		"vendorId": 16553561,
+		"placedByEmail": "crustosindia@gmail.com",
+		"clientUserId": 26835500,
+		"vendorUserId": 0,
+		"deviceId": "Web",
+		"submittedByVendor": false,
+		"clientName": "Crustos",
+		"vendorName": "HK Flesh Meat Supplies",
+		"clientCreationDate": 1540798325000,
+		"vendorInvoiceNumber": "164",
+		"deliveryCharge": 0.0,
+		"syncToAccountingClient": false,
+		"syncToAccountingVendor": false,
+		"currency": "USD $",
+		"status": "CheckedIn",
+		"creditTotal": 0.0,
+		"netCreditResolved": -0.0,
+		"needsReview": false,
+		"discountValue": 0.0,
+		"checkedinBy": "crustosindia@gmail.com",
+		"checkedinDate": 1543392610000,
+		"orderTotal": 950.0,
+		"hasOrderComments": false,
+		"hasProductNotes": false,
+		"hasClientAccountingSync": false,
+		"hasVendorAccountingSync": false,
+		"orderCount": 0,
+		"clientShippingAddress": {
+			"address": "15B",
+			"address2": "Masjid Moth",
+			"city": "NEW DELHI",
+			"state": "AR",
+			"zip": "71630",
+			"phone": null
+		},
+		"clientBillingAddress": {
+			"address": null,
+			"address2": null,
+			"city": null,
+			"state": null,
+			"zip": null,
+			"phone": null
+		},
+		"vendorBillingAddress": {
+			"address": null,
+			"address2": null,
+			"city": null,
+			"state": "----------",
+			"zip": "00000",
+			"phone": null
+		},
+		"products": [{
+			"price": 280.0,
+			"productId": 26836498,
+			"productName": "CHICKEN THAI",
+			"uom": "kg",
+			"sku": "065",
+			"vendorId": 16553561,
+			"isPriceByWeight": false,
+			"originalPrice": 280.0,
+			"availability": "Available",
+			"basePrice": 280.0,
+			"lineId": 2,
+			"quantity": 1.9,
+			"status": "CheckedIn",
+			"totalPrice": 532.0,
+			"isProductTaxable": false,
+			"checkedinQuantity": 1.9,
+			"checkedinStatus": "Received(Full)",
+			"credit": 0.0,
+			"originalQuantity": 1.9
+		}, {
+			"price": 220.0,
+			"productId": 16553564,
+			"productName": "Chicken (Whole)",
+			"uom": "kg",
+			"sku": "063",
+			"vendorId": 16553561,
+			"isPriceByWeight": false,
+			"originalPrice": 220.0,
+			"availability": "Available",
+			"basePrice": 220.0,
+			"lineId": 1,
+			"quantity": 1.9,
+			"status": "CheckedIn",
+			"totalPrice": 418.0,
+			"isProductTaxable": false,
+			"checkedinQuantity": 1.9,
+			"checkedinStatus": "Received(Full)",
+			"credit": 0.0,
+			"originalQuantity": 1.9
+		}],
+		"standingOrder": false
+	},
+	"notes": [],
+	"warnings": [],
+	"errors": [],
+	"errorMessage": null
+}
+
+Check in screen:
+GET /orders/28225523?clientId=16553369
+[{
+	"vendor": 26837724,
+	"data": [{
+		"lineId": 1,
+		"deviceId": "Web",
+		"productId": 26837749,
+		"quantity": 5.0,
+		"orderId": 28225523,
+		"creationDate": "Nov 28, 2018 11:04 AM",
+		"clientId": 16553369,
+		"clientAddress": "15B",
+		"clientAddress2": "Masjid Moth",
+		"clientCity": "NEW DELHI",
+		"clientState": "AR",
+		"clientZip": "71630",
+		"vendorId": 26837724,
+		"vendorName": "ORGANO FRESH",
+		"status": "New",
+		"sku": "12",
+		"productName": "BABY CORN",
+		"imageName": "null",
+		"uom": "kg",
+		"basePrice": 98.0,
+		"isPercentage": "null",
+		"discountValue": 0.0,
+		"totalPrice": 490.0,
+		"price": 98.0,
+		"deliveryCharge": 0.0,
+		"userName": "feraasd@gmail.com",
+		"createdDateTime": 1543421095708,
+		"checkinNote": "null",
+		"checkedinBy": "null",
+		"checkedinStatus": "null",
+		"clientUserId": 16553368,
+		"vendorUserId": 0,
+		"currency": "USD $"
+	}]
+}]
+
+add some checkin images for the corresponding product
+POST apiv2/ordercheckin/addImage/
+{"imageName" : "https://s3.amazonaws.com/bc-ord/743ded61f89b4d1f9a2622ccb57bf7ca/2018-11-28 11:08:19.998.png"}
+
+
+
+GET apiv2/ordercheckin/getCheckinImages/28225523?productId=2683774
+[{
+	"id": 18833,
+	"orderId": 28225523,
+	"productId": 26837749,
+	"filePath": "https://s3.amazonaws.com/bc-ord/743ded61f89b4d1f9a2622ccb57bf7ca/2018-11-28 11:08:19.998.png",
+	"fileName": "Screenshot 2018-11-27 15.13.28.png",
+	"creationDate": 1543421299998,
+	"createdBy": "feraasd@gmail.com",
+	"orgId": null
+}, {
+	"id": 18834,
+	"orderId": 28225523,
+	"productId": 26837749,
+	"filePath": "https://s3.amazonaws.com/bc-ord/04b13fea6239497cac91a582fe13f51e/2018-11-28 11:08:27.632.png",
+	"fileName": "Screenshot 2018-11-28 17.36.20.png",
+	"creationDate": 1543421307632,
+	"createdBy": "feraasd@gmail.com",
+	"orgId": null
+}]
+
+PUT
+/apiv2/orders/saveinvoicenumber/?orderId=28225523&invoiceNumber=123123123
+{ "response" : "Success" }
+
+POST apiv2/ordercheckin/newCheckin/28225523?clientId=16553369
+[{
+	"productId": 26837749,
+	"price": 98,
+	"qty": 4,
+	"createdBy": "feraasd@gmail.com",
+	"status": "Received(Partial)",
+	"note": "sdasdasd",
+	"credit": -98,
+	"productName": "BABY CORN",
+	"uom": "kg",
+	"sku": "12",
+	"deliveryCharge": 0,
+	"totalPrice": 392
+}]
+
+Response:
+{ "response" : "Success" }
+
+/apiv2/orders/updatecheckindeliverydate/28225523
+{
+	"checkin_delivery_date": "11-28-2018",
+	"updated_by": "feraasd@gmail.com",
+	"user_id": 16553368
+}
+
