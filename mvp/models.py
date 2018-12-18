@@ -37,7 +37,7 @@ class Restaurant(TimeStampable, models.Model):
     email = models.EmailField(max_length=70, blank=False)
     # Aggregated stats
     total_orders = models.IntegerField(default=0)
-    total_order_value = models.DecimalField(max_digits=10, decimal_places=2)
+    total_order_value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
     # TODO: figure out automated count on a join table
     total_suppliers = models.IntegerField(default=0)
     total_inventory_items = models.IntegerField(default=0)

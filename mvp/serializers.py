@@ -20,4 +20,4 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ('status', 'id', 'supplier', 'supplier_name', 'created_at', 'requested_delivery_date', 'amount', 'invoice_no',
-                  'has_comment', 'is_disputed')
+                  'has_comment', 'is_disputed', 'restaurant')

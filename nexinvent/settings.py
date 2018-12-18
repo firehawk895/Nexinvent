@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'mvp'
+    'mvp',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -70,7 +71,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'nexinvent.wsgi.application'
+#
+# REST_FRAMEWORK = {
+#     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+# }
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databasesexit
