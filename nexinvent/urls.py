@@ -23,6 +23,7 @@ from mvp import views
 
 router = DefaultRouter()
 router.register(r'orders', views.OrderViewSet)
+router.register(r'products', views.ProductViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
