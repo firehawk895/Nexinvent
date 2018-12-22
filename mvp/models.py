@@ -5,6 +5,8 @@ from django.db import models
 
 from utility.behaviours import TimeStampable
 
+from .managers import OrderManager
+
 
 class Supplier(TimeStampable, models.Model):
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
@@ -18,6 +20,9 @@ class Supplier(TimeStampable, models.Model):
     # TODO: add a gst no validator here
     gst_no = models.CharField(max_length=256)
 
+    def __str__(self):
+        return self.name
+
 
 class Product(TimeStampable, models.Model):
     # Product table is not normalized for convenience
@@ -27,6 +32,9 @@ class Product(TimeStampable, models.Model):
     unit = models.CharField(max_length=128)
     description = models.CharField(max_length=512)
     price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def __str__(self):
+        return self.supplier.name + " - " + self.name
 
 
 class Restaurant(TimeStampable, models.Model):
@@ -43,6 +51,9 @@ class Restaurant(TimeStampable, models.Model):
     total_inventory_items = models.IntegerField(default=0)
     associated_suppliers = models.ManyToManyField(Supplier, through='AssociatedSupplier')
 
+    def __str__(self):
+        return self.name
+
 
 class AssociatedSupplier(TimeStampable, models.Model):
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
@@ -51,6 +62,7 @@ class AssociatedSupplier(TimeStampable, models.Model):
 
 
 class Order(TimeStampable, models.Model):
+    objects = OrderManager()
     SUBMITTED = "submitted"
     ACCEPTED = "accepted"
     IN_TRANSIT = "in_transit"
@@ -102,12 +114,13 @@ class OrderItem(TimeStampable, models.Model):
         ("new", "New/Substitute"),
     )
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
-    status = models.CharField(choices=STATUSES, max_length=18)
-    qty_received = models.IntegerField(default=0)
+    status = models.CharField(choices=STATUSES, max_length=18, blank=True)
+    quantity = models.IntegerField(blank=True)
+    qty_received = models.IntegerField(blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     total = models.DecimalField(max_digits=8, decimal_places=2)
     note = models.TextField(blank=True)
-    comment = models.CharField(max_length=1024)
+    comment = models.CharField(max_length=1024, blank=True)
 
 
 class Cart(TimeStampable, models.Model):

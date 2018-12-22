@@ -1,6 +1,8 @@
 from rest_framework import serializers
+from rest_framework.relations import PrimaryKeyRelatedField
+from rest_framework.renderers import JSONRenderer
 
-from .models import Order, Product
+from .models import Order, Product, OrderItem, Restaurant
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -27,3 +29,43 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('supplier', 'name', 'sku', 'unit', 'description', 'price')
+
+
+# class OrderItemSerializer(serializers.ModelSerializer):
+#     order = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all(), required=False)
+#
+#     class Meta:
+#         model = OrderItem
+#         fields = ('order', 'product', 'quantity', 'note', 'comment')
+#
+#
+# class OrderNewSerializer(serializers.ModelSerializer):
+#     order_items = OrderItemSerializer(many=True)
+#
+#     def create(self, validated_data):
+#         return Order.objects.create(validated_data, Restaurant.objects.first().id, None)
+#
+#     # need to implement:
+#     # def update(self, instance, validated_data): if you want to support updation
+#
+#     class Meta:
+#         model = Order
+#         fields = ('supplier', 'requested_delivery_date', 'comment', 'order_items')
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    order = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all(), required=False)
+
+    class Meta:
+        model = OrderItem
+        fields = ('order', 'product', 'quantity', 'total')
+
+
+class OrderNewSerializer(serializers.ModelSerializer):
+    order_items = OrderItemSerializer(many=True)
+
+    def create(self, validated_data):
+        return Order.objects.create(validated_data, Restaurant.objects.first().id, None)
+
+    class Meta:
+        model = Order
+        fields = ('supplier', 'requested_delivery_date', 'comment', 'order_items')

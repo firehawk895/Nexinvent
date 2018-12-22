@@ -21,12 +21,14 @@ from rest_framework.routers import DefaultRouter
 
 from mvp import views
 
+
 router = DefaultRouter()
 router.register(r'orders', views.OrderViewSet)
 router.register(r'products', views.ProductViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    url(r'orders/new', views.send_all_orders, name="download_allocations"),
     path('', include(router.urls)),
     url(r'^docs/', include_docs_urls(title='Nexinvent APIs'))
 ]
