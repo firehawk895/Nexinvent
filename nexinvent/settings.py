@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'nexinvent.urls'
+ROOT_URLCONF = 'nexinventx.urls'
 
 TEMPLATES = [
     {
@@ -70,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'nexinvent.wsgi.application'
+WSGI_APPLICATION = 'nexinventx.wsgi.application'
 #
 # REST_FRAMEWORK = {
 #     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
@@ -87,7 +87,7 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'nexinvent',
+        'NAME': 'nexinventx',
         'USER': 'djangowalauser',
         'PASSWORD': 'merapassword',
         'HOST': 'localhost',

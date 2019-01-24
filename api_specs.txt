@@ -80,10 +80,10 @@ The BC json looks like:
 like BC the aggregate can be seperated into another API, or maybe not. just seperate the code and no need to add an extra HTTP call.
 what I think the json will look like:
 {
-  "total_orders": 11,
-  "total_order_value": 58434,
-  "total_suppliers": 6,
-  "total_inventory_items": 52,
+  "total_orders": 11, Order.objects.filter(restaurant_id=restaurant_id).count()
+  "total_order_value": 58434, Order.objects.filter(restaurant_id=restaurant_id).aggregate(total_order_value=Sum('amount'))
+  "total_suppliers": 6, assoc_suppliers = AssociatedSupplier.objects.filter(restaurant_id=restaurant_id), assoc_suppliers.count()
+  "total_inventory_items": 52, Products.objects.filter(supplier__in=assoc_suppliers)
   orders_list: [{
     "id": 1,
     "status": "CheckedIn",
@@ -1408,6 +1408,7 @@ A subset of this is in /apiv2/vendors/transactedvendors/16553369
 }]
 
 do a post of per item to update cart:
+can be replaced with PATCH Cart as far as I can tell.
 POST /apiv2/cart/updatecartwithresponse/
 [{
 	"updated_by": "feraasd@gmail.com",

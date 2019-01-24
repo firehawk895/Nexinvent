@@ -23,7 +23,7 @@ class TestCaseMixin:
         response = client.get(url, {}, format='json', **headers)
         return response
 
-    def call_post_api(self, url, user=None, json_request=None, headers=None):
+    def call_post_api(self, url, json_request=None, headers=None):
         client = APIClient()
         # client = self._get_authenticated_client(user)
 

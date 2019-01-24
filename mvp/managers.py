@@ -1,85 +1,45 @@
-from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
+from django.db.models import Sum
+
+
+class CartManager(models.Manager):
+    def remove_supplier_cart(self, supplier_id, restaurant_id):
+        return CartManager.objects.delete(supplier_id=supplier_id, restaurant_id=restaurant_id)
 
 
 class OrderManager(models.Manager):
-    def create(self, order, restaurant_id, employee_id):
+    @transaction.atomic
+    def create_new_order(self, supplier_id, req_dd, comment, restaurant_id):
         """
-        Model manager encapsulating the send all orders logic
-        :param data:
-        No, data is actually:
-        {
-                "delivery_charge": 0,
-                "reqDD": null,
-                "comment": null,
-                "supplier_id": "26837724",
-                "products": [{
-                    "product_id": "26837749",
-                    "quantity": 1,
-                    "supplier_id": "26837724",
-                    "price": 98
-                }, {
-                    "product_id": "26837753",
-                    "quantity": 1,
-                    "supplier_id": "26837724",
-                    "price": 165
-                }]
-            }]
-        }
-        which is part of the bigger picture:
-        {
-            "data": [{
-                "reqDD": null,
-                "comment": null,
-                "supplier_id": "26836656",
-                "products": [{
-                    "product_id": "26836661",
-                    "quantity": 3,
-                    "supplier_id": "26836656",
-                    "price": 788
-                }]
-            }, {
-                "delivery_charge": 0,
-                "reqDD": null,
-                "comment": null,
-                "supplier_id": "26837724",
-                "products": [{
-                    "product_id": "26837749",
-                    "quantity": 1,
-                    "supplier_id": "26837724",
-                    "price": 98
-                }, {
-                    "product_id": "26837753",
-                    "quantity": 1,
-                    "supplier_id": "26837724",
-                    "price": 165
-                }]
-            }]
-        }
+
+        :param supplier_id:
+        :param req_dd:
+        :param comment:
+        :param restaurant_id:
         :return:
         """
-        from .models import Order, OrderItem
-        from .models import Supplier, Restaurant
-        print(order)
+        from .models import Cart, Order, OrderItem
+        cart_items = Cart.objects.filter(restaurant_id=restaurant_id, supplier_id=supplier_id)
+        amount = sum(map(lambda x: x.amount, cart_items))
+        order = Order.objects.save(supplier_id=supplier_id, restaurant_id=restaurant_id, amount=amount,
+                             status=Order.SUBMITTED, requested_delivery_date=req_dd, comment=comment)
+        for c in cart_items:
+            OrderItem.objects.save(order=order, quantity=c.quantity, product=c.product, amount=c.amount, note=c.note)
+        cart_items.delete()
 
-        new_order = Order(
-            supplier_id=order.get('supplier').id,
-            restaurant_id=Restaurant.objects.first().id,
-            amount=sum(map(lambda x: x["total"], order.get("order_items"))),
-            employee_id=User.objects.first().id,
-            status=Order.SUBMITTED,
-            requested_delivery_date=None,
-            comment="What a comment"
-        )
-        new_order.save()
-        for order_item in order.get("order_items"):
-            new_order_item = OrderItem(
-                order=new_order,
-                quantity=order_item.get("quantity"),
-                product_id=order_item.get("product").id,
-                total=order_item.get("total"),
-                note=order_item.get("note", ""),
-                comment=order_item.get("comment", "")
-            )
-            new_order_item.save()
-        return new_order
+    def get_order_aggregates(self, restaurant_id):
+        """
+        get a few aggregate values for the order history screen
+        :param restaurant_id:
+        :return:
+        """
+        from .models import Order, AssociatedSupplier, Product
+        assoc_suppliers = AssociatedSupplier.objects.filter(restaurant_id=restaurant_id)
+        return {
+            "total_orders": Order.objects.filter(restaurant_id=restaurant_id).count(),
+            "total_order_value": Order.objects.filter(restaurant_id=restaurant_id).aggregate(
+                total_order_value=Sum('amount'))["total_order_value"],
+            "total_suppliers": assoc_suppliers.count(),
+            "total_inventory_items": Product.objects.filter(supplier_id__in=map(
+                lambda x: x.supplier_id, assoc_suppliers)).count()
+        }

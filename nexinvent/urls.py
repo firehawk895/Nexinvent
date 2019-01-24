@@ -20,15 +20,20 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 
 from mvp import views
+from rest_framework.authtoken.views import obtain_auth_token
 
 
 router = DefaultRouter()
 router.register(r'orders', views.OrderViewSet)
+router.register(r'order_items', views.OrderItemViewSet)
 router.register(r'products', views.ProductViewSet)
+router.register(r'carts', views.CartViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'orders/new', views.send_all_orders, name="download_allocations"),
+    url(r'orders/new/', views.send_all_orders),
+    url(r'upload/', views.upload_file),
     path('', include(router.urls)),
-    url(r'^docs/', include_docs_urls(title='Nexinvent APIs'))
+    url(r'^docs/', include_docs_urls(title='Nexinvent APIs')),
+    url(r'^api-token-auth/', obtain_auth_token)
 ]

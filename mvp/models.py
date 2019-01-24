@@ -1,7 +1,11 @@
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 from utility.behaviours import TimeStampable
 
@@ -118,20 +122,23 @@ class OrderItem(TimeStampable, models.Model):
     quantity = models.IntegerField(blank=True)
     qty_received = models.IntegerField(blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    total = models.DecimalField(max_digits=8, decimal_places=2)
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
     note = models.TextField(blank=True)
     comment = models.CharField(max_length=1024, blank=True)
 
 
 class Cart(TimeStampable, models.Model):
+    # adding a denormalized field to avoid joins and increase convenience
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    qty = models.IntegerField(default=1)
+    quantity = models.IntegerField(default=1)
     note = models.CharField(max_length=512)
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
 
-# Dont need this anymore, using a standard Many to Many relationship of restaurants vs fav_products
-# class FavProducts(TimeStampable, models.Model):
-#     # adding supplier for easy entry point, although not needed
-#     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
-#     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='fav_products')
-#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+

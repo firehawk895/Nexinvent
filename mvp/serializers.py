@@ -1,8 +1,6 @@
 from rest_framework import serializers
-from rest_framework.relations import PrimaryKeyRelatedField
-from rest_framework.renderers import JSONRenderer
 
-from .models import Order, Product, OrderItem, Restaurant
+from .models import Order, Product, OrderItem, Restaurant, Cart, Supplier
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -23,6 +21,7 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ('status', 'id', 'supplier', 'supplier_name', 'created_at', 'requested_delivery_date', 'amount', 'invoice_no',
                   'has_comment', 'is_disputed', 'restaurant')
+        depth = 1
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -31,41 +30,32 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ('supplier', 'name', 'sku', 'unit', 'description', 'price')
 
 
-# class OrderItemSerializer(serializers.ModelSerializer):
-#     order = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all(), required=False)
-#
-#     class Meta:
-#         model = OrderItem
-#         fields = ('order', 'product', 'quantity', 'note', 'comment')
-#
-#
-# class OrderNewSerializer(serializers.ModelSerializer):
-#     order_items = OrderItemSerializer(many=True)
-#
-#     def create(self, validated_data):
-#         return Order.objects.create(validated_data, Restaurant.objects.first().id, None)
-#
-#     # need to implement:
-#     # def update(self, instance, validated_data): if you want to support updation
-#
-#     class Meta:
-#         model = Order
-#         fields = ('supplier', 'requested_delivery_date', 'comment', 'order_items')
+class OrderNewSerializer(serializers.Serializer):
+    supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
+    requested_delivery_date = serializers.DateField(required=False)
+    note = serializers.CharField(required=False)
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        return Order.objects.create_new_order(validated_data["supplier_id"], validated_data.get("requested_delivery_date"),
+                                              validated_data.get("note"), self.context.restaurant_id)
+
+    class Meta:
+        fields = ('supplier', 'requested_delivery_date', 'note')
+
+
+class CartSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Cart
+        fields = ('supplier', 'product', 'restaurant', 'qty', 'note')
+
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    order = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all(), required=False)
 
     class Meta:
         model = OrderItem
-        fields = ('order', 'product', 'quantity', 'total')
-
-
-class OrderNewSerializer(serializers.ModelSerializer):
-    order_items = OrderItemSerializer(many=True)
-
-    def create(self, validated_data):
-        return Order.objects.create(validated_data, Restaurant.objects.first().id, None)
-
-    class Meta:
-        model = Order
-        fields = ('supplier', 'requested_delivery_date', 'comment', 'order_items')
+        fields = ('order', 'status', 'quantity', 'qty_received', 'product', 'amount', 'note', 'comment')
+        depth = 1
