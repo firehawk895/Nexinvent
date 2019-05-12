@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'mvp',
     'django_filters',
+    'rest_framework.authtoken',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -52,7 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'nexinventx.urls'
+ROOT_URLCONF = 'nexinvent.urls'
 
 TEMPLATES = [
     {
@@ -70,7 +72,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'nexinventx.wsgi.application'
+WSGI_APPLICATION = 'nexinvent.wsgi.application'
 #
 # REST_FRAMEWORK = {
 #     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
@@ -78,8 +80,17 @@ WSGI_APPLICATION = 'nexinventx.wsgi.application'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 20
+    'PAGE_SIZE': 20,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
 }
+
+"""
+AWS S3 configuration
+"""
+S3_ACCESS_KEY = "AKIAJSHVYV2CVGDCVVPA"
+S3_SECRET_KEY = "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"
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databasesexit
@@ -87,7 +98,7 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'nexinventx',
+        'NAME': 'nexinvent',
         'USER': 'djangowalauser',
         'PASSWORD': 'merapassword',
         'HOST': 'localhost',

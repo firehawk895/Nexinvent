@@ -27,7 +27,9 @@ class OrderSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('supplier', 'name', 'sku', 'unit', 'description', 'price')
+        fields = ('id', 'supplier', 'name', 'sku', 'unit', 'description', 'price')
+
+        depth = 1
 
 
 class OrderNewSerializer(serializers.Serializer):
@@ -50,7 +52,9 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ('supplier', 'product', 'restaurant', 'qty', 'note')
+        fields = ('supplier', 'product', 'restaurant', 'quantity', 'note')
+
+        depth = 1
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
