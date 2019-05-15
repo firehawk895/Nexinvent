@@ -133,8 +133,8 @@ class Cart(TimeStampable, models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-    note = models.CharField(max_length=512)
-    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    note = models.CharField(max_length=512, blank=True)
+    amount = models.DecimalField(max_digits=8, decimal_places=2, null=True)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

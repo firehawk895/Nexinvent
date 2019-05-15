@@ -48,7 +48,11 @@ class OrderNewSerializer(serializers.Serializer):
         fields = ('supplier', 'requested_delivery_date', 'note')
 
 
+# explicitly specify the querysets so that they can be used for POST and PATCH APIs
 class CartSerializer(serializers.ModelSerializer):
+    supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    restaurant = serializers.PrimaryKeyRelatedField(queryset=Restaurant.objects.all())
 
     class Meta:
         model = Cart

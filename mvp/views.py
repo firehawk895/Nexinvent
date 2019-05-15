@@ -97,6 +97,11 @@ class CartViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, )
     filter_class = CartFilterSet
 
+    # def create(self, request, *args, **kwargs):
+    #     import ipdb; ipdb.set_trace()
+    #     self.serializer_class = CartSerializerCreate
+    #     return super().create(request, *args, **kwargs)
+
     # TODO: maybe add some authorization to avoid malicious deletes
     @action(detail=False, methods=['delete'])
     def delete_suppliers_cart(self, request):
