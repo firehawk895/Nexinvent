@@ -50,15 +50,17 @@ class OrderNewSerializer(serializers.Serializer):
 
 # explicitly specify the querysets so that they can be used for POST API as NON read only
 class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = ('id', 'supplier', 'product', 'restaurant', 'quantity', 'note')
+
+        depth = 1
+
+
+class CartSerializerPost(CartSerializer):
     supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
     restaurant = serializers.PrimaryKeyRelatedField(queryset=Restaurant.objects.all())
-
-    class Meta:
-        model = Cart
-        fields = ('supplier', 'product', 'restaurant', 'quantity', 'note')
-
-        depth = 1
 
 
 # lets not allow modification of supplier, product and restaurant

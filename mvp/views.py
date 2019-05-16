@@ -14,7 +14,7 @@ from .filtersets import OrderFilterSet, ProductFilterSet, CartFilterSet, OrderIt
 from .models import Order, Product, Cart, OrderItem
 
 from .serializers import OrderSerializer, ProductSerializer, OrderNewSerializer, CartSerializer, OrderItemSerializer, \
-    CartSerializerPatch
+    CartSerializerPatch, CartSerializerPost
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -97,6 +97,10 @@ class CartViewSet(viewsets.ModelViewSet):
     serializer_class = CartSerializer
     filter_backends = (DjangoFilterBackend, )
     filter_class = CartFilterSet
+
+    def create(self, request, *args, **kwargs):
+        self.serializer_class = CartSerializerPost
+        return super().create(self, request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         self.serializer_class = CartSerializerPatch
