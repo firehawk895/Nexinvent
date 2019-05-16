@@ -13,7 +13,8 @@ from utility.generics import upload_file_to_s3
 from .filtersets import OrderFilterSet, ProductFilterSet, CartFilterSet, OrderItemFilterSet
 from .models import Order, Product, Cart, OrderItem
 
-from .serializers import OrderSerializer, ProductSerializer, OrderNewSerializer, CartSerializer, OrderItemSerializer
+from .serializers import OrderSerializer, ProductSerializer, OrderNewSerializer, CartSerializer, OrderItemSerializer, \
+    CartSerializerPatch
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -97,10 +98,9 @@ class CartViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, )
     filter_class = CartFilterSet
 
-    # def create(self, request, *args, **kwargs):
-    #     import ipdb; ipdb.set_trace()
-    #     self.serializer_class = CartSerializerCreate
-    #     return super().create(request, *args, **kwargs)
+    def update(self, request, *args, **kwargs):
+        self.serializer_class = CartSerializerPatch
+        return super().update(request, *args, **kwargs)
 
     # TODO: maybe add some authorization to avoid malicious deletes
     @action(detail=False, methods=['delete'])

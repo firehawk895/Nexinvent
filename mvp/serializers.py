@@ -48,7 +48,7 @@ class OrderNewSerializer(serializers.Serializer):
         fields = ('supplier', 'requested_delivery_date', 'note')
 
 
-# explicitly specify the querysets so that they can be used for POST and PATCH APIs
+# explicitly specify the querysets so that they can be used for POST API as NON read only
 class CartSerializer(serializers.ModelSerializer):
     supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
@@ -59,6 +59,13 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ('supplier', 'product', 'restaurant', 'quantity', 'note')
 
         depth = 1
+
+
+# lets not allow modification of supplier, product and restaurant
+class CartSerializerPatch(CartSerializer):
+    supplier = serializers.PrimaryKeyRelatedField(read_only=True)
+    product = serializers.PrimaryKeyRelatedField(read_only=True)
+    restaurant = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
