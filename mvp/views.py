@@ -100,7 +100,15 @@ class CartViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         self.serializer_class = CartSerializerPost
-        return super().create(self, request, *args, **kwargs)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        # I want to return data of the format that CartSerializer specifies
+        cart = Cart.objects.get(pk=serializer.data["id"])
+        cart_serializer = CartSerializer(cart)
+        return Response(cart_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def update(self, request, *args, **kwargs):
         self.serializer_class = CartSerializerPatch
