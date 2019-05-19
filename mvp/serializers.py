@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from .models import Order, Product, OrderItem, Restaurant, Cart, Supplier
 
@@ -50,11 +51,22 @@ class OrderNewSerializer(serializers.Serializer):
 
 # explicitly specify the querysets so that they can be used for POST API as NON read only
 class CartSerializer(serializers.ModelSerializer):
+    def validate_quantity(self, value):
+        if value == 0:
+            raise serializers.ValidationError("Quantity cannot be 0")
+
     class Meta:
         model = Cart
         fields = ('id', 'supplier', 'product', 'restaurant', 'quantity', 'note')
-
         depth = 1
+        # Only for POST, don't allow a duplicate cart item
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Cart.objects.all(),
+                fields=('supplier', 'product', 'restaurant'),
+                message="Item is already in cart, try refreshing the page."
+            )
+        ]
 
 
 class CartSerializerPost(CartSerializer):
