@@ -51,10 +51,6 @@ class OrderNewSerializer(serializers.Serializer):
 
 # explicitly specify the querysets so that they can be used for POST API as NON read only
 class CartSerializer(serializers.ModelSerializer):
-    def validate_quantity(self, value):
-        if value == 0:
-            raise serializers.ValidationError("Quantity cannot be 0")
-
     class Meta:
         model = Cart
         fields = ('id', 'supplier', 'product', 'restaurant', 'quantity', 'note')
@@ -67,6 +63,11 @@ class CartSerializer(serializers.ModelSerializer):
                 message="Item is already in cart, try refreshing the page."
             )
         ]
+
+    def validate_quantity(self, value):
+        if value == 0:
+            raise serializers.ValidationError("Quantity cannot be 0")
+        return value
 
 
 class CartSerializerPost(CartSerializer):
