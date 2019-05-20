@@ -9,7 +9,7 @@ from rest_framework.authtoken.models import Token
 
 from utility.behaviours import TimeStampable
 
-from .managers import OrderManager
+from .managers import OrderManager, CartManager
 
 
 class Supplier(TimeStampable, models.Model):
@@ -128,6 +128,7 @@ class OrderItem(TimeStampable, models.Model):
 
 
 class Cart(TimeStampable, models.Model):
+    objects = CartManager()
     # adding a denormalized field to avoid joins and increase convenience
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

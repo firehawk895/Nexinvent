@@ -3,8 +3,8 @@ from django.db.models import Sum
 
 
 class CartManager(models.Manager):
-    def remove_supplier_cart(self, supplier_id, restaurant_id):
-        return CartManager.objects.delete(supplier_id=supplier_id, restaurant_id=restaurant_id)
+    def remove_supplier_cart(self, restaurant, supplier):
+        return self.get_queryset().filter(supplier=supplier, restaurant=restaurant).delete()
 
 
 class OrderManager(models.Manager):

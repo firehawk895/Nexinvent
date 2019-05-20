@@ -83,6 +83,16 @@ class CartSerializerPatch(CartSerializer):
     restaurant = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
+# Using this for deleting cart items based on supplier id
+class CartSerializerDeleteSupplierWise(serializers.Serializer):
+    restaurant = serializers.PrimaryKeyRelatedField(queryset=Restaurant.objects.all())
+    supplier_list = serializers.ListField(child=serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all()))
+
+    def perform_delete(self):
+        for supplier in self.validated_data["supplier_list"]:
+            Cart.objects.remove_supplier_cart(self.validated_data["restaurant"], supplier)
+
+
 class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:

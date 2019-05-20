@@ -1,7 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import status
-from PIL import Image
 
 # Create your views here.
 from rest_framework import viewsets
@@ -14,7 +13,7 @@ from .filtersets import OrderFilterSet, ProductFilterSet, CartFilterSet, OrderIt
 from .models import Order, Product, Cart, OrderItem
 
 from .serializers import OrderSerializer, ProductSerializer, OrderNewSerializer, CartSerializer, OrderItemSerializer, \
-    CartSerializerPatch, CartSerializerPost
+    CartSerializerPatch, CartSerializerPost, CartSerializerDeleteSupplierWise
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -130,17 +129,13 @@ class CartViewSet(viewsets.ModelViewSet):
         cart_serializer = CartSerializer(cart)
         return Response(cart_serializer.data, status=status.HTTP_200_OK)
 
-    # TODO: maybe add some authorization to avoid malicious deletes
     @action(detail=False, methods=['delete'])
     def delete_suppliers_cart(self, request):
-        restaurant_id = request.data.get('restaurant_id', None)
-        supplier_id = request.data.get('supplier_id', None)
-        if restaurant_id and supplier_id:
-            Cart.objects.remove_supplier_cart(restaurant_id, supplier_id)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            # TODO: a correct error message should come here, raise validation error or something
-            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.serializer_class = CartSerializerDeleteSupplierWise
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.perform_delete()
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 
 
