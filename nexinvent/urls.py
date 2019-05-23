@@ -31,9 +31,9 @@ router.register(r'carts', views.CartViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'orders/new/', views.send_all_orders),
     url(r'upload/', views.upload_file),
+    url(r'send_orders/', views.send_orders),
     path('', include(router.urls)),
-    url(r'^docs/', include_docs_urls(title='Nexinvent APIs')),
+    url(r'^docs/', include_docs_urls(title='OrderClap APIs')),
     url(r'^api-token-auth/', obtain_auth_token)
 ]

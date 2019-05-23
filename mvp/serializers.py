@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.settings import api_settings
 from rest_framework.validators import UniqueTogetherValidator
 
 from .models import Order, Product, OrderItem, Restaurant, Cart, Supplier
@@ -33,20 +34,55 @@ class ProductSerializer(serializers.ModelSerializer):
         depth = 1
 
 
-class OrderNewSerializer(serializers.Serializer):
-    supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
-    requested_delivery_date = serializers.DateField(required=False)
-    note = serializers.CharField(required=False)
+class CartItemSerializer(serializers.Serializer):
+    id = serializers.PrimaryKeyRelatedField(queryset=Cart.objects.all())
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    quantity = serializers.IntegerField(required=True)
 
-    def update(self, instance, validated_data):
-        pass
+    def validate(self, attrs):
+        # We are using optimistic deletes in the front end
+        # There could be a case where the page is stale, hence make sure the backend cart is the same as the front end
+        # cart.
+
+        # funny thing, the serializer sends you the objects lulz.
+        cart_object = attrs["id"]
+        product_obj = attrs["product"]
+        cart_item = Cart.objects.get(pk=cart_object.id)
+        if cart_item.product.id != product_obj.id or cart_item.quantity != attrs["quantity"]:
+            raise serializers.ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: "Please refresh the page before sending orders"})
+        # inject the sub total
+        attrs["total"] = product_obj.price * attrs["quantity"]
+        return attrs
+
+
+class SendOrderSerializer(serializers.Serializer):
+    # TODO: You can change the queryset to only the associated suppliers for security/integrity
+    supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
+    req_dd = serializers.DateField(required=False)
+    cart_items = CartItemSerializer(many=True)
+    restaurant = serializers.PrimaryKeyRelatedField(queryset=Restaurant.objects.all())
+
+    def validate(self, attrs):
+        # inject the total
+        attrs["total"] = sum(map(lambda x: x["total"], attrs["cart_items"]))
+        return attrs
+
+    # The default implementation for multiple object creation using ListSerializer is to simply call .create()
+    # for each item in the list, hence lets override create
 
     def create(self, validated_data):
-        return Order.objects.create_new_order(validated_data["supplier_id"], validated_data.get("requested_delivery_date"),
-                                              validated_data.get("note"), self.context.restaurant_id)
-
-    class Meta:
-        fields = ('supplier', 'requested_delivery_date', 'note')
+        # don't want to move this logic to a model manager
+        # drf did so much hard work in getting all the cart objects, why query them again for a delete?
+        print(validated_data)
+        order = Order.objects.create(supplier=validated_data["supplier"], restaurant=validated_data["restaurant"],
+                             amount=validated_data["total"],status=Order.SUBMITTED,
+                                     requested_delivery_date=validated_data["req_dd"])
+        for cart_item in validated_data["cart_items"]:
+            OrderItem.objects.create(order=order, quantity=cart_item["quantity"],
+                                     product=cart_item["product"], amount=cart_item["total"])
+            cart_obj = cart_item["id"]
+            cart_obj.delete()
 
 
 # explicitly specify the querysets so that they can be used for POST API as NON read only

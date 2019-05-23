@@ -1,3 +1,4 @@
+from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import status
@@ -12,12 +13,12 @@ from utility.generics import upload_file_to_s3
 from .filtersets import OrderFilterSet, ProductFilterSet, CartFilterSet, OrderItemFilterSet
 from .models import Order, Product, Cart, OrderItem
 
-from .serializers import OrderSerializer, ProductSerializer, OrderNewSerializer, CartSerializer, OrderItemSerializer, \
-    CartSerializerPatch, CartSerializerPost, CartSerializerDeleteSupplierWise
+from .serializers import OrderSerializer, ProductSerializer, CartSerializer, OrderItemSerializer, \
+    CartSerializerPatch, CartSerializerPost, CartSerializerDeleteSupplierWise, SendOrderSerializer
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
+    queryset = Order.objects.all().order_by('-created_at')
     serializer_class = OrderSerializer
     filter_backends = (filters.SearchFilter, DjangoFilterBackend)
     search_fields = ('invoice_no', 'supplier__name')
@@ -53,32 +54,12 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['POST'])
-def send_all_orders(request):
-    """
-    {
-        "data": [{
-                "supplier": 1,
-                "requested_delivery_date": "2019-12-27",
-                "note": ""
-            },
-            {
-                "supplier": 2,
-                "requested_delivery_date": "2020-12-27",
-                "note": ""
-            }
-        ],
-        "restaurant_id": 1
-    }
-    :param request:
-    :return:
-    """
-    serializer = OrderNewSerializer(data=request.data.get('data'), many=True,
-                                    context={'restaurant_id': request.data.get('restaurant_id')})
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    else:
-        return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+@transaction.atomic
+def send_orders(request):
+    serializer = SendOrderSerializer(data=request.data, many=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response({}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
@@ -136,6 +117,3 @@ class CartViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.perform_delete()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
-
-
-

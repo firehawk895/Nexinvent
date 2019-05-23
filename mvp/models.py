@@ -93,10 +93,10 @@ class Order(TimeStampable, models.Model):
         (PAID_FULL, "Paid (full)"),
         (PAID_PARTIAL, "Paid (partial)"),
         (DISPUTED, "Disputed"),
-        ("due", "due")
+        (DUE, "due")
     )
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, related_name='orders')
-    employee = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    employee = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='orders')
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     payment_status = models.CharField(choices=PAYMENT_STATUSES, max_length=18, blank=True, null=True)

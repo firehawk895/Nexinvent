@@ -92,7 +92,7 @@ WSGI_APPLICATION = 'nexinvent.wsgi.application'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 20,
+    'PAGE_SIZE': 100,
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     )
@@ -100,9 +100,10 @@ REST_FRAMEWORK = {
 
 """
 AWS S3 configuration
+get this from a configuration?
 """
-S3_ACCESS_KEY = "AKIAJSHVYV2CVGDCVVPA"
-S3_SECRET_KEY = "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"
+S3_ACCESS_KEY = ""
+S3_SECRET_KEY = ""
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databasesexit
