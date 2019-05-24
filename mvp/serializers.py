@@ -40,7 +40,14 @@ class CartItemSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(required=True)
 
     def validate(self, attrs):
-        # We are using optimistic deletes in the front end
+        """
+        We are using optimistic deletes in the front end. There could be a case where the page is stale,
+        hence make sure the backend cart is the same as the front end cart. Also this is a great place to calculate the
+        total amount
+        :param attrs:
+        :return:
+        """
+        #
         # There could be a case where the page is stale, hence make sure the backend cart is the same as the front end
         # cart.
 
@@ -64,20 +71,25 @@ class SendOrderSerializer(serializers.Serializer):
     restaurant = serializers.PrimaryKeyRelatedField(queryset=Restaurant.objects.all())
 
     def validate(self, attrs):
+        """
+        Don't need extra validation; great place to calculate the grand total
+        :param attrs:
+        :return:
+        """
         # inject the total
         attrs["total"] = sum(map(lambda x: x["total"], attrs["cart_items"]))
         return attrs
 
     # The default implementation for multiple object creation using ListSerializer is to simply call .create()
     # for each item in the list, hence lets override create
-
     def create(self, validated_data):
         # don't want to move this logic to a model manager
         # drf did so much hard work in getting all the cart objects, why query them again for a delete?
         print(validated_data)
+        req_dd = validated_data["req_dd"] if "req_dd" in validated_data else None
         order = Order.objects.create(supplier=validated_data["supplier"], restaurant=validated_data["restaurant"],
                              amount=validated_data["total"],status=Order.SUBMITTED,
-                                     requested_delivery_date=validated_data["req_dd"])
+                                     requested_delivery_date=req_dd)
         for cart_item in validated_data["cart_items"]:
             OrderItem.objects.create(order=order, quantity=cart_item["quantity"],
                                      product=cart_item["product"], amount=cart_item["total"])

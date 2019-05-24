@@ -130,6 +130,7 @@ class OrderItem(TimeStampable, models.Model):
 class Cart(TimeStampable, models.Model):
     objects = CartManager()
     # adding a denormalized field to avoid joins and increase convenience
+    # the convenience is very high when noticed in the front end
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
