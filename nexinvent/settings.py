@@ -25,7 +25,7 @@ SECRET_KEY = 'ja*po#q(&u)*9t@t%w^x6-#44!sg-sa($2&0mrw)b$8k6#v1ds'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["orderclap2-dev.ap-southeast-1.elasticbeanstalk.com"]
 
 
 # Application definition
