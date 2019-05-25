@@ -14,3 +14,8 @@ venv.bak/
 .idea/
 __pycache__
 **.pyc
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
