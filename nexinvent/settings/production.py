@@ -41,3 +41,7 @@ CORS_ALLOW_CREDENTIALS = True
 # CORS_ORIGIN_REGEX_WHITELIST = (
 #     'localhost:3030',
 # )
+
+# https://docs.djangoproject.com/en/2.2/ref/settings/#secure-ssl-redirect
+# force ssl redirect
+SECURE_SSL_REDIRECT = True
