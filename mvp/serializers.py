@@ -47,9 +47,6 @@ class CartItemSerializer(serializers.Serializer):
         :param attrs:
         :return:
         """
-        #
-        # There could be a case where the page is stale, hence make sure the backend cart is the same as the front end
-        # cart.
 
         # funny thing, the serializer sends you the objects lulz.
         cart_object = attrs["id"]
@@ -85,7 +82,6 @@ class SendOrderSerializer(serializers.Serializer):
     def create(self, validated_data):
         # don't want to move this logic to a model manager
         # drf did so much hard work in getting all the cart objects, why query them again for a delete?
-        print(validated_data)
         req_dd = validated_data["req_dd"] if "req_dd" in validated_data else None
         order = Order.objects.create(supplier=validated_data["supplier"], restaurant=validated_data["restaurant"],
                              amount=validated_data["total"],status=Order.SUBMITTED,
