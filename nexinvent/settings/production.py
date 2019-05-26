@@ -45,3 +45,7 @@ CORS_ALLOW_CREDENTIALS = True
 # https://docs.djangoproject.com/en/2.2/ref/settings/#secure-ssl-redirect
 # force ssl redirect
 SECURE_SSL_REDIRECT = True
+
+# You need this for Elastic Beanstalk or you'll get infinite redirects
+# https://rickchristianson.wordpress.com/2013/10/31/getting-a-django-app-to-use-https-on-aws-elastic-beanstalk/
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
