@@ -7,4 +7,5 @@
 * This project has been configured to be deployed in ElasticBeanStalk, so the production settings should be riddled with EBS environment variable references.
   - Beanstalk container commands set up to collectstatic and migrate with --noinput
   - on the first run, a super user needs to be created manually for the django admin 
-  
+  - when you ssh into the instance using ```eb ssh```, the environment variables configured in EBS dashboard will not
+   be available. use ```. /opt/python/current/env``` to load them [source: https://stackoverflow.com/questions/24562714/elastic-beanstalk-custom-ami-cant-see-environment-variables]
