@@ -22,6 +22,13 @@ class OrderSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+# You definitely need a patch serializer to maintain integrity
+class OrderSerializerPatch(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ('payment_status', 'status')
+
+
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem

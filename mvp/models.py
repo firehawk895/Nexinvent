@@ -67,12 +67,13 @@ class AssociatedSupplier(TimeStampable, models.Model):
 
 class Order(TimeStampable, models.Model):
     objects = OrderManager()
-    SUBMITTED = "submitted"
-    ACCEPTED = "accepted"
-    IN_TRANSIT = "in_transit"
-    DELIVERED = "delivered"
-    CANCELLED = "cancelled"
-    CHECKED_IN = "checked_in"
+
+    SUBMITTED = "Submitted"
+    ACCEPTED = "Accepted"
+    IN_TRANSIT = "In-Transit"
+    DELIVERED = "Delivered"
+    CANCELLED = "Cancelled"
+    CHECKED_IN = "Checked-In"
 
     STATUSES = (
         (SUBMITTED, "Submitted"),
@@ -82,10 +83,10 @@ class Order(TimeStampable, models.Model):
         (CANCELLED, "Cancelled"),
         (CHECKED_IN, "Checked-In")
     )
-    INVOICE_RECEIVED = "invoice_received"
-    PAID_FULL = "paid_full"
-    PAID_PARTIAL = "paid_partial"
-    DISPUTED = "disputed"
+    INVOICE_RECEIVED = "Invoice received"
+    PAID_FULL = "Paid (full)"
+    PAID_PARTIAL = "Paid (partial)"
+    DISPUTED = "Disputed"
     DUE = "due"
 
     PAYMENT_STATUSES = (
@@ -112,11 +113,11 @@ class Order(TimeStampable, models.Model):
 
 class OrderItem(TimeStampable, models.Model):
     STATUSES = (
-        ("missing", "Missing/Not Delivered"),
-        ("received_full", "Received (Full)"),
-        ("received_partial", "Received (Partial)"),
-        ("returned", "Returned"),
-        ("new", "New/Substitute"),
+        ("Missing/Not Delivered", "Missing/Not Delivered"),
+        ("Received (Full)", "Received (Full)"),
+        ("Received (Partial)", "Received (Partial)"),
+        ("Returned", "Returned"),
+        ("New/Substitute", "New/Substitute"),
     )
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
     status = models.CharField(choices=STATUSES, max_length=18, blank=True)
