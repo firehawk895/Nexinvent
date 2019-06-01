@@ -26,7 +26,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class OrderSerializerPatch(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ('payment_status', 'status')
+        fields = ('payment_status', 'invoice_no')
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
