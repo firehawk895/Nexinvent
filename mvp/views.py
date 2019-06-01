@@ -13,7 +13,7 @@ from utility.generics import upload_file_to_s3
 from .filtersets import OrderFilterSet, ProductFilterSet, CartFilterSet, OrderItemFilterSet
 from .models import Order, Product, Cart, OrderItem
 
-from .serializers import OrderSerializer, ProductSerializer, CartSerializer, OrderItemSerializer, \
+from .serializers import OrderSerializer, OrderInstanceSerializer, ProductSerializer, CartSerializer, OrderItemSerializer, \
     CartSerializerPatch, CartSerializerPost, CartSerializerDeleteSupplierWise, SendOrderSerializer
 
 
@@ -23,6 +23,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter, DjangoFilterBackend)
     search_fields = ('invoice_no', 'supplier__name')
     filter_class = OrderFilterSet
+
+    def retrieve(self, request, *args, **kwargs):
+        self.serializer_class = OrderInstanceSerializer
+        return super().retrieve(self, request, *args, **kwargs)
 
 
 class OrderItemViewSet(viewsets.ModelViewSet):

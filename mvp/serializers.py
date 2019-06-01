@@ -6,9 +6,8 @@ from .models import Order, Product, OrderItem, Restaurant, Cart, Supplier
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    has_comment = serializers.SerializerMethodField()
-    is_disputed = serializers.SerializerMethodField()
-    supplier_name = serializers.SerializerMethodField()
+    # has_comment = serializers.SerializerMethodField()
+    # is_disputed = serializers.SerializerMethodField()
 
     def get_has_comment(self, obj):
         return True if obj.comment else False
@@ -16,13 +15,27 @@ class OrderSerializer(serializers.ModelSerializer):
     def get_is_disputed(self, obj):
         return True if obj.payment_status == Order.DISPUTED else False
 
-    def get_supplier_name(self, obj):
-        return obj.supplier.name
+    class Meta:
+        model = Order
+        fields = ('status', 'id', 'supplier', 'created_at', 'requested_delivery_date', 'amount',
+                  'invoice_no', 'restaurant')
+        depth = 1
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ('id', 'status', 'quantity', 'qty_received', 'product', 'amount', 'note', 'comment')
+        depth = 1
+
+
+class OrderInstanceSerializer(serializers.ModelSerializer):
+    order_items = OrderItemSerializer(many=True)
 
     class Meta:
         model = Order
-        fields = ('status', 'id', 'supplier', 'supplier_name', 'created_at', 'requested_delivery_date', 'amount', 'invoice_no',
-                  'has_comment', 'is_disputed', 'restaurant')
+        fields = ('status', 'id', 'supplier', 'created_at', 'requested_delivery_date', 'amount',
+                  'invoice_no', 'order_items', 'restaurant', 'checked_in_at', 'payment_status')
         depth = 1
 
 
@@ -48,7 +61,7 @@ class CartItemSerializer(serializers.Serializer):
         :return:
         """
 
-        # funny thing, the serializer sends you the objects lulz.
+        # funny thing, the serializer sends you the objects.
         cart_object = attrs["id"]
         product_obj = attrs["product"]
         cart_item = Cart.objects.get(pk=cart_object.id)
@@ -135,11 +148,3 @@ class CartSerializerDeleteSupplierWise(serializers.Serializer):
     def perform_delete(self):
         for supplier in self.validated_data["supplier_list"]:
             Cart.objects.remove_supplier_cart(self.validated_data["restaurant"], supplier)
-
-
-class OrderItemSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = OrderItem
-        fields = ('order', 'status', 'quantity', 'qty_received', 'product', 'amount', 'note', 'comment')
-        depth = 1

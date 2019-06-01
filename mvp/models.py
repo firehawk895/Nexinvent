@@ -107,6 +107,7 @@ class Order(TimeStampable, models.Model):
     delivery_charge = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     comment = models.CharField(max_length=1024, blank=True)
     invoice_no = models.CharField(max_length=256, blank=True)
+    checked_in_at = models.DateTimeField(null=True)
 
 
 class OrderItem(TimeStampable, models.Model):
