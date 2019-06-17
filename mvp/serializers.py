@@ -113,7 +113,6 @@ class SendOrderSerializer(serializers.Serializer):
             cart_obj.delete()
 
 
-# explicitly specify the querysets so that they can be used for POST API as NON read only
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
@@ -132,6 +131,42 @@ class CartSerializer(serializers.ModelSerializer):
         if value == 0:
             raise serializers.ValidationError("Quantity cannot be 0")
         return value
+
+
+class OrderItemCheckinSerializer(serializers.Serializer):
+    # TODO: I would love it if this queryset could be restricted to 1 order
+    id = serializers.PrimaryKeyRelatedField(queryset=OrderItem.objects.all())
+    status = serializers.ChoiceField(OrderItem.STATUSES)
+    qty_received = serializers.IntegerField()
+
+    def validate(self, attrs):
+        """
+        Check if status syncs with qty_received
+        :param attrs:
+        :return:
+        """
+        # TODO: for more stronger entity add a check for "New" status items
+        order_item = attrs["id"]
+        if (((attrs["status"] == OrderItem.MISSING or attrs["status"] == OrderItem.RETURNED) and attrs["qty_received"] != 0.00) or
+            (attrs["status"] == OrderItem.RECEIVED and attrs["qty_received"] < order_item.quantity) or
+            (attrs["status"] == OrderItem.RECEIVED_PARTIAL and (attrs["qty_received"] == 0 or attrs["qty_received"] >= order_item.quantity))):
+            raise serializers.ValidationError("Status and Received Quantity do not match.")
+        return attrs
+
+
+class CheckinSerializer(serializers.Serializer):
+    order = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all())
+    order_items = OrderItemCheckinSerializer(many=True)
+
+    def save(self, **kwargs):
+        order_obj = self.validated_data["order"]
+        order_obj.status = Order.CHECKED_IN
+        order_obj.save()
+        for order_item in self.validated_data["order_items"]:
+            order_item_obj = order_item["id"]
+            order_item_obj.status = order_item["status"]
+            order_item_obj.qty_received = order_item["qty_received"]
+            order_item_obj.save()
 
 
 class CartSerializerPost(CartSerializer):

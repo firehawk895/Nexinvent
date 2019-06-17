@@ -112,17 +112,23 @@ class Order(TimeStampable, models.Model):
 
 
 class OrderItem(TimeStampable, models.Model):
+    MISSING = "Missing/Not Delivered"
+    RECEIVED = "Received (Full)"
+    RECEIVED_PARTIAL = "Received (Partial)"
+    RETURNED = "Returned"
+    NEW = "New"
+
     STATUSES = (
-        ("Missing/Not Delivered", "Missing/Not Delivered"),
-        ("Received (Full)", "Received (Full)"),
-        ("Received (Partial)", "Received (Partial)"),
-        ("Returned", "Returned"),
-        ("New/Substitute", "New/Substitute"),
+        (MISSING, "Missing/Not Delivered"),
+        (RECEIVED, "Received (Full)"),
+        (RECEIVED_PARTIAL, "Received (Partial)"),
+        (RETURNED, "Returned"),
+        (NEW, "New"),
     )
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
     status = models.CharField(choices=STATUSES, max_length=18, blank=True)
-    quantity = models.IntegerField(blank=True)
-    qty_received = models.IntegerField(blank=True, null=True)
+    quantity = models.DecimalField(blank=True, decimal_places=2, max_digits=10)
+    qty_received = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=10)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     note = models.TextField(blank=True)

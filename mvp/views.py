@@ -13,8 +13,9 @@ from utility.generics import upload_file_to_s3
 from .filtersets import OrderFilterSet, ProductFilterSet, CartFilterSet, OrderItemFilterSet
 from .models import Order, Product, Cart, OrderItem
 
-from .serializers import OrderSerializer, OrderSerializerPatch, OrderInstanceSerializer, ProductSerializer, CartSerializer, OrderItemSerializer, \
-    CartSerializerPatch, CartSerializerPost, CartSerializerDeleteSupplierWise, SendOrderSerializer
+from .serializers import OrderSerializer, OrderSerializerPatch, OrderInstanceSerializer, ProductSerializer, \
+    CartSerializer, OrderItemSerializer, \
+    CartSerializerPatch, CartSerializerPost, CartSerializerDeleteSupplierWise, SendOrderSerializer, CheckinSerializer
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -65,6 +66,15 @@ class ProductViewSet(viewsets.ModelViewSet):
 @transaction.atomic
 def send_orders(request):
     serializer = SendOrderSerializer(data=request.data, many=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response({}, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@transaction.atomic
+def checkin(request):
+    serializer = CheckinSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response({}, status=status.HTTP_201_CREATED)

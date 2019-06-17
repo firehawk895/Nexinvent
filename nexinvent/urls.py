@@ -33,6 +33,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'upload/', views.upload_file),
     url(r'send_orders/', views.send_orders),
+    url(r'checkin/', views.checkin),
     path('', include(router.urls)),
     url(r'^docs/', include_docs_urls(title='OrderClap APIs')),
     url(r'^api-token-auth/', obtain_auth_token)
