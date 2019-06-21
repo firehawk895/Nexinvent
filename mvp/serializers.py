@@ -137,7 +137,7 @@ class OrderItemCheckinSerializer(serializers.Serializer):
     # TODO: I would love it if this queryset could be restricted to 1 order
     id = serializers.PrimaryKeyRelatedField(queryset=OrderItem.objects.all())
     status = serializers.ChoiceField(OrderItem.STATUSES)
-    qty_received = serializers.IntegerField()
+    qty_received = serializers.DecimalField(decimal_places=2, max_digits=10)
 
     def validate(self, attrs):
         """
