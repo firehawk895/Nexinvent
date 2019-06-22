@@ -126,7 +126,7 @@ class OrderItem(TimeStampable, models.Model):
         (NEW, "New"),
     )
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
-    status = models.CharField(choices=STATUSES, max_length=18, blank=True)
+    status = models.CharField(choices=STATUSES, max_length=50, blank=True)
     quantity = models.DecimalField(blank=True, decimal_places=2, max_digits=10)
     qty_received = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=10)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
