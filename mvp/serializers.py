@@ -42,7 +42,7 @@ class OrderInstanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ('status', 'id', 'supplier', 'created_at', 'requested_delivery_date', 'amount',
-                  'invoice_no', 'order_items', 'restaurant', 'checked_in_at', 'payment_status')
+                  'invoice_no', 'order_items', 'restaurant', 'checked_in_at', 'payment_status', 'delivered_on')
         depth = 1
 
 
@@ -156,11 +156,16 @@ class OrderItemCheckinSerializer(serializers.Serializer):
 
 class CheckinSerializer(serializers.Serializer):
     order = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all())
+    delivered_on = serializers.DateField(allow_null=True)
+    invoice_no = serializers.CharField(max_length=256, allow_blank=True)
     order_items = OrderItemCheckinSerializer(many=True)
 
     def save(self, **kwargs):
         order_obj = self.validated_data["order"]
         order_obj.status = Order.CHECKED_IN
+        if "delivered_on" in self.validated_data:
+            order_obj.delivered_on = self.validated_data["delivered_on"]
+        order_obj.invoice_no = self.validated_data["invoice_no"]
         order_obj.save()
         for order_item in self.validated_data["order_items"]:
             order_item_obj = order_item["id"]
