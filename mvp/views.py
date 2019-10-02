@@ -68,6 +68,8 @@ def send_orders(request):
     serializer = SendOrderSerializer(data=request.data, many=True)
     serializer.is_valid(raise_exception=True)
     serializer.save()
+    # At this point validation errors have not been raised, or a HTTP 400 would have been sent out
+    # Therefore the async sms task can be sent out here
     return Response({}, status=status.HTTP_201_CREATED)
 
 

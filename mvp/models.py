@@ -142,7 +142,7 @@ class Cart(TimeStampable, models.Model):
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
+    quantity = models.DecimalField(decimal_places=2, max_digits=10, default=0)
     note = models.CharField(max_length=512, blank=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2, null=True)
 
