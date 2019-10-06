@@ -55,7 +55,7 @@ something like this LOL
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by('name')
     serializer_class = ProductSerializer
     filter_backends = (filters.SearchFilter, DjangoFilterBackend)
     search_fields = ('supplier__name', 'name', 'sku', 'description')
