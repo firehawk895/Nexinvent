@@ -12,3 +12,5 @@
 * additional notes for lazy googlers/ready reference:
   - ```export DJANGO_SETTINGS_MODULE=nexinvent.settings.development``` in your terminal
   - To permanently set the env variable - ```nano ~/.bash_profile``` and add the above line
+  - celery worker can be started by ```celery -A tasks worker --loglevel=info```, but make sure rabbitmq has been started
+  - In development : ```sudo rabbitmq-server```

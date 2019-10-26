@@ -93,7 +93,7 @@ def upload_file(request):
 
 
 class CartViewSet(viewsets.ModelViewSet):
-    queryset = Cart.objects.all()
+    queryset = Cart.objects.all().order_by('supplier__name')
     serializer_class = CartSerializer
     filter_backends = (DjangoFilterBackend, )
     filter_class = CartFilterSet

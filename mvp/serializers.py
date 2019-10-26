@@ -57,7 +57,7 @@ class ProductSerializer(serializers.ModelSerializer):
 class CartItemSerializer(serializers.Serializer):
     id = serializers.PrimaryKeyRelatedField(queryset=Cart.objects.all())
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
-    quantity = serializers.IntegerField(required=True)
+    quantity = serializers.DecimalField(required=True, decimal_places=2, max_digits=10)
 
     def validate(self, attrs):
         """
