@@ -41,7 +41,7 @@ class OrderInstanceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('status', 'id', 'supplier', 'created_at', 'requested_delivery_date', 'amount',
+        fields = ('status', 'id', 'supplier', 'created_at', 'requested_delivery_date', 'amount', 'amount_checked_in',
                   'invoice_no', 'order_items', 'restaurant', 'checked_in_at', 'payment_status', 'delivered_on')
         depth = 1
 
@@ -166,12 +166,18 @@ class CheckinSerializer(serializers.Serializer):
         if "delivered_on" in self.validated_data:
             order_obj.delivered_on = self.validated_data["delivered_on"]
         order_obj.invoice_no = self.validated_data["invoice_no"]
-        order_obj.save()
+
+        amount_checked_in = 0
         for order_item in self.validated_data["order_items"]:
             order_item_obj = order_item["id"]
             order_item_obj.status = order_item["status"]
             order_item_obj.qty_received = order_item["qty_received"]
+            amount_checked_in += order_item_obj.product.price * order_item_obj.qty_received
             order_item_obj.save()
+
+        order_obj.amount_checked_in = amount_checked_in
+        order_obj.save()
+        print(order_obj)
 
 
 class CartSerializerPost(CartSerializer):
