@@ -74,10 +74,12 @@ class Order(TimeStampable, models.Model):
     DELIVERED = "Delivered"
     CANCELLED = "Cancelled"
     CHECKED_IN = "Checked-In"
+    REJECTED = "Rejected"
 
     STATUSES = (
         (SUBMITTED, "Submitted"),
         (ACCEPTED, "Accepted"),
+        (REJECTED, "Rejected"),
         (IN_TRANSIT, "In-Transit"),
         (DELIVERED, "Delivered"),
         (CANCELLED, "Cancelled"),
