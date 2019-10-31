@@ -26,7 +26,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class OrderSerializerPatch(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ('payment_status', 'invoice_no')
+        fields = ('payment_status', 'invoice_no', 'status')
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -159,6 +159,12 @@ class CheckinSerializer(serializers.Serializer):
     delivered_on = serializers.DateField(allow_null=True)
     invoice_no = serializers.CharField(max_length=256, allow_blank=True)
     order_items = OrderItemCheckinSerializer(many=True)
+
+    def validate(self, attrs):
+        order_obj = attrs["order"]
+        if order_obj.status == Order.DELIVERED:
+            raise serializers.ValidationError("A finalized order cannot be checked in again")
+        return attrs
 
     def save(self, **kwargs):
         order_obj = self.validated_data["order"]
