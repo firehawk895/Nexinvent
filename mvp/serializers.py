@@ -18,7 +18,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ('status', 'id', 'supplier', 'created_at', 'requested_delivery_date', 'amount',
-                  'invoice_no', 'restaurant')
+                  'invoice_no', 'restaurant', 'amount_checked_in')
         depth = 1
 
 
