@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.settings import api_settings
 from rest_framework.validators import UniqueTogetherValidator
 
+
 from .models import Order, Product, OrderItem, Restaurant, Cart, Supplier
 
 
@@ -106,11 +107,17 @@ class SendOrderSerializer(serializers.Serializer):
         order = Order.objects.create(supplier=validated_data["supplier"], restaurant=validated_data["restaurant"],
                              amount=validated_data["total"],status=Order.SUBMITTED,
                                      requested_delivery_date=req_dd)
+
         for cart_item in validated_data["cart_items"]:
             OrderItem.objects.create(order=order, quantity=cart_item["quantity"],
                                      product=cart_item["product"], amount=cart_item["total"])
             cart_obj = cart_item["id"]
             cart_obj.delete()
+
+        from .tasks import send_whatsapp
+        # warning: possible atomic transaction rollback even though message/email is sent
+        send_whatsapp(order.restaurant.phone_number, order.construct_new_order_restaurant_notification())
+        send_whatsapp(order.supplier.phone_number, order.construct_new_order_supplier_notification())
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -183,7 +190,7 @@ class CheckinSerializer(serializers.Serializer):
 
         order_obj.amount_checked_in = amount_checked_in
         order_obj.save()
-        print(order_obj)
+
 
 
 class CartSerializerPost(CartSerializer):

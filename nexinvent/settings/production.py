@@ -31,6 +31,11 @@ DATABASES = {
         }
     }
 
+TWILIO = {
+    'SID': os.environ['TWILIO_SID'],
+    'AUTH_TOKEN': os.environ['TWILIO_AUTH_TOKEN']
+}
+
 DEBUG = os.environ['DEBUG']
 
 CORS_ORIGIN_ALLOW_ALL = True

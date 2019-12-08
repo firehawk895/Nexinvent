@@ -27,3 +27,8 @@ DATABASES = {
         'PORT': '',
     }
 }
+
+TWILIO = {
+    'SID': 'ACcf8d6e98f2caffaf5804250075a7ecfe',
+    'AUTH_TOKEN': 'ad83fc7523945c9fa70aef5a1a503b5c'
+}
