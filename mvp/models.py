@@ -5,6 +5,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django_extensions.db.fields import AutoSlugField
 from rest_framework.authtoken.models import Token
 
 from utility.behaviours import TimeStampable
@@ -21,6 +22,7 @@ class Supplier(TimeStampable, models.Model):
     address = models.TextField(blank=True)
     phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)  # validators should be a list
     email = models.EmailField(max_length=70, blank=False)
+    slug = AutoSlugField(null=True, default=None, populate_from='name')
     # TODO: add a gst no validator here
     gst_no = models.CharField(max_length=256)
 
@@ -113,28 +115,22 @@ class Order(TimeStampable, models.Model):
     invoice_no = models.CharField(max_length=256, blank=True)
     checked_in_at = models.DateTimeField(null=True)
 
-    # def construct_order_message(self):
-    #     msg = "New Order:\n"
-    #     for item in self.order_items.all():
-    #         msg += "{} qty of {}, {}\n".format(item.quantity, item.product.name, item.product.unit)
-    #     return msg
-
-    def construct_new_order_restaurant_notification(self):
-        return "New Order {} with {} of Amount ₹{} has been placed with {}, delivery scheduled on {}".format(str(self.id), self.supplier.name, self.amount, self.supplier.name, str(self.requested_delivery_date))
-
-    def construct_new_order_supplier_notification(self):
-        base_url = "http://dev.orderclap.com/vendors/orders/"
-        return "New order received from {}, order #{}, Amount: ₹ {}. Requested Delivery date : {}. \nTo Accept/Reject click {}".format(self.restaurant.name, str(self.id), self.amount, str(self.requested_delivery_date), base_url+str(self.id))
-
-    @staticmethod
-    def construct_order_updater_notification(status, order_id, amount, business_name):
-        base_url = "http://dev.orderclap.com/vendors/orders/"
-        return "Order Update: You have {} order {} of Amount ₹{} for {}. \nDetails: {}".format(status, order_id, amount, business_name, base_url+order_id)
-
-    @staticmethod
-    def construct_order_updatee_notification(status, order_id, amount, business_name):
-        base_url = "http://dev.orderclap.com/vendors/orders/"
-        return "Order Update: Order #{} of Amount ₹{} has been {} by {}. \nOrder Details: {}".format(order_id, amount, status, business_name, base_url+order_id)
+    # def construct_new_order_restaurant_notification(self):
+    #     return "New Order {} with {} of Amount ₹{} has been placed with {}, delivery scheduled on {}".format(str(self.id), self.supplier.name, self.amount, self.supplier.name, str(self.requested_delivery_date))
+    #
+    # def construct_new_order_supplier_notification(self):
+    #     base_url = "http://dev.orderclap.com/vendors/orders/"
+    #     return "New order received from {}, order #{}, Amount: ₹ {}. Requested Delivery date : {}. \nTo Accept/Reject click {}".format(self.restaurant.name, str(self.id), self.amount, str(self.requested_delivery_date), base_url+str(self.id))
+    #
+    # @staticmethod
+    # def construct_order_updater_notification(status, order_id, amount, business_name):
+    #     base_url = "http://dev.orderclap.com/vendors/orders/"
+    #     return "Order Update: You have {} order {} of Amount ₹{} for {}. \nDetails: {}".format(status, order_id, amount, business_name, base_url+order_id)
+    #
+    # @staticmethod
+    # def construct_order_updatee_notification(status, order_id, amount, business_name):
+    #     base_url = "http://dev.orderclap.com/vendors/orders/"
+    #     return "Order Update: Order #{} of Amount ₹{} has been {} by {}. \nOrder Details: {}".format(order_id, amount, status, business_name, base_url+order_id)
 
 
 class OrderItem(TimeStampable, models.Model):

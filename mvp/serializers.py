@@ -114,10 +114,10 @@ class SendOrderSerializer(serializers.Serializer):
             cart_obj = cart_item["id"]
             cart_obj.delete()
 
-        from .tasks import send_whatsapp
+        # from .tasks import send_whatsapp
         # warning: possible atomic transaction rollback even though message/email is sent
-        send_whatsapp(order.restaurant.phone_number, order.construct_new_order_restaurant_notification())
-        send_whatsapp(order.supplier.phone_number, order.construct_new_order_supplier_notification())
+        # send_whatsapp(order.restaurant.phone_number, order.construct_new_order_restaurant_notification())
+        # send_whatsapp(order.supplier.phone_number, order.construct_new_order_supplier_notification())
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -190,7 +190,6 @@ class CheckinSerializer(serializers.Serializer):
 
         order_obj.amount_checked_in = amount_checked_in
         order_obj.save()
-
 
 
 class CartSerializerPost(CartSerializer):

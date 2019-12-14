@@ -11,7 +11,7 @@ class OrderFilterSet(FilterSet):
 
     class Meta:
         model = Order
-        fields = ['supplier', 'employee', 'restaurant', 'payment_status', 'status']
+        fields = ['supplier', 'employee', 'restaurant', 'payment_status', 'status', 'supplier__slug']
 
 
 class OrderItemFilterSet(FilterSet):
