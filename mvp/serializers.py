@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.settings import api_settings
 from rest_framework.validators import UniqueTogetherValidator
 
-
+from mvp.notifyers import send_whatsapp_notifications
 from .models import Order, Product, OrderItem, Restaurant, Cart, Supplier
 
 
@@ -28,6 +28,10 @@ class OrderSerializerPatch(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ('payment_status', 'invoice_no', 'status')
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        send_whatsapp_notifications(instance)
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -114,10 +118,8 @@ class SendOrderSerializer(serializers.Serializer):
             cart_obj = cart_item["id"]
             cart_obj.delete()
 
-        # from .tasks import send_whatsapp
         # warning: possible atomic transaction rollback even though message/email is sent
-        # send_whatsapp(order.restaurant.phone_number, order.construct_new_order_restaurant_notification())
-        # send_whatsapp(order.supplier.phone_number, order.construct_new_order_supplier_notification())
+        send_whatsapp_notifications(order)
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -190,6 +192,7 @@ class CheckinSerializer(serializers.Serializer):
 
         order_obj.amount_checked_in = amount_checked_in
         order_obj.save()
+        send_whatsapp_notifications(order_obj)
 
 
 class CartSerializerPost(CartSerializer):
