@@ -31,6 +31,6 @@ DATABASES = {
 FRONT_END_BASE_URL = "http://localhost:3000/"
 
 TWILIO = {
-    'SID': 'AC1765477149ed56781c0bb6c4cfdbb0bd',
-    'AUTH_TOKEN': 'd583f04022a961d2afe1ea4a5cd2cd55'
+    'SID': '',
+    'AUTH_TOKEN': ''
 }
