@@ -29,5 +29,5 @@
   - you can also use eb ssh
   - you probably want to run ```python manage.py createsuperuser```, that's in ```/opt/python/current/app/```
   - ```source /opt/python/run/venv/bin/activate``` in the instance to get inside the virtual environment
-  - environment variables wont be visible in ec2, therefore do this - https://aws.amazon.com/premiumsupport/knowledge-center/view-environment-properties-elastic-beanstalk/
+  - ```source /opt/python/current/env``` environment variables wont be visible in ec2, therefore do this - https://aws.amazon.com/premiumsupport/knowledge-center/view-environment-properties-elastic-beanstalk/
   
