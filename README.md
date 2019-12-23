@@ -24,3 +24,10 @@
   - Add Environment variables in software configuration
   - Create a new Code Pipeline from the repository, no build stage required. select the same ELB Application
   - Voila, fresh deployment should be ready
+  - Make sure that the security group used by EBS has a corresponding key pair created.
+  - ssh -i <pem> ec2-user@<ec2-ip>
+  - you can also use eb ssh
+  - you probably want to run ```python manage.py createsuperuser```, that's in ```/opt/python/current/app/```
+  - ```source /opt/python/run/venv/bin/activate``` in the instance to get inside the virtual environment
+  - environment variables wont be visible in ec2, therefore do this - https://aws.amazon.com/premiumsupport/knowledge-center/view-environment-properties-elastic-beanstalk/
+  
