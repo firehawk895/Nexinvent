@@ -35,6 +35,6 @@ urlpatterns = [
     url(r'send_orders/', views.send_orders),
     url(r'checkin/', views.checkin),
     path('', include(router.urls)),
-    url(r'^docs/', include_docs_urls(title='OrderClap APIs')),
+    # url(r'^docs/', include_docs_urls(title='OrderClap APIs')),
     url(r'^api-token-auth/', obtain_auth_token)
 ]
