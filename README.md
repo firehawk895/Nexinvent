@@ -14,3 +14,13 @@
   - To permanently set the env variable - ```nano ~/.bash_profile``` and add the above line
   - celery worker can be started by ```celery -A tasks worker --loglevel=info```, but make sure rabbitmq has been started
   - In development : ```sudo rabbitmq-server```
+  
+## Doing a clean deploy
+
+  - Set up a configured python environment in Elastic beanstalk (not docker)
+  - Get a preconfigured public SSH certificate. this can be accessible from any amazon account now. Preferabbly add an entry for *.<domain>.com
+  - Configure a sweet RDS instance so its environment variables are exposed
+  - Add a load balancer. use a HTTPS from 443 listener configured to internal instance 80 HTTP.
+  - Add Environment variables in software configuration
+  - Create a new Code Pipeline from the repository, no build stage required. select the same ELB Application
+  - Voila, fresh deployment should be ready
