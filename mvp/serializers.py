@@ -30,11 +30,14 @@ class OrderSerializerPatch(serializers.ModelSerializer):
         fields = ('payment_status', 'invoice_no', 'status')
 
     def update(self, instance, validated_data):
-        new_instance = super().update(instance, validated_data)
-        # send a notification only when status changes
-        if instance.status != new_instance.status:
+        # record the old instance status
+        old_status = instance.status
+        super().update(instance, validated_data)
+        # send a notification only when status changes and a status change has been explicitly
+        # sent in the the patch request
+        if instance.status != old_status and "status" in validated_data:
             send_whatsapp_notifications(instance)
-        return new_instance
+        return instance
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
