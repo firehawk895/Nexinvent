@@ -34,6 +34,15 @@ class OrderViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
 
+class AnalyticsOrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all().order_by('-created_at')
+    serializer_class = OrderInstanceSerializer
+
+    def list(self, request, *args, **kwargs):
+        self.serializer_class = OrderInstanceSerializer
+        return super().list(request, *args, **kwargs)
+
+
 class OrderItemViewSet(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer

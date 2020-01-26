@@ -43,7 +43,7 @@ class OrderSerializerPatch(serializers.ModelSerializer):
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = ('id', 'status', 'quantity', 'qty_received', 'product', 'amount', 'note', 'comment')
+        fields = ('id', 'status', 'quantity', 'qty_received', 'product', 'amount', 'note', 'comment', 'created_at', 'modified_at')
         depth = 1
 
 

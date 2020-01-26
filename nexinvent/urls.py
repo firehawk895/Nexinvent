@@ -25,6 +25,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 router = DefaultRouter()
 router.register(r'orders', views.OrderViewSet)
+router.register(r'analytics', views.AnalyticsOrderViewSet)
 router.register(r'order_items', views.OrderItemViewSet)
 router.register(r'products', views.ProductViewSet)
 router.register(r'carts', views.CartViewSet)
