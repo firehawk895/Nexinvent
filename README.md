@@ -27,7 +27,9 @@
   - Make sure that the security group used by EBS has a corresponding key pair created.
   - ssh -i <pem> ec2-user@<ec2-ip>
   - you can also use eb ssh
-  - you probably want to run ```python manage.py createsuperuser```, that's in ```/opt/python/current/app/```
+  - app location: ```/opt/python/current/app/```
+  - you probably want to run ```python manage.py createsuperuser```
   - ```source /opt/python/run/venv/bin/activate``` in the instance to get inside the virtual environment
-  - ```source /opt/python/current/env``` environment variables wont be visible in ec2, therefore do this - https://aws.amazon.com/premiumsupport/knowledge-center/view-environment-properties-elastic-beanstalk/
+  - ```source /opt/python/current/env``` to make environment variables visible in ec2, [https://aws.amazon.com/premiumsupport/knowledge-center/view-environment-properties-elastic-beanstalk/]
+
   
