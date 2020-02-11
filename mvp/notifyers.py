@@ -13,8 +13,8 @@ def send_whatsapp_notifications(order):
     if order.status == Order.SUBMITTED:
         # New order got created by the restaurant
         # -- Restaurant notification
-        send_order_created_restaurant_notification(order.id, order.amount, order.supplier.name,
-                                                   order.requested_delivery_date, order.restaurant.phone_number)
+        # send_order_created_restaurant_notification(order.id, order.amount, order.supplier.name,
+        #                                            order.requested_delivery_date, order.restaurant.phone_number)
         # -- Supplier notification
         send_order_created_supplier_notification(order.id, order.amount, order.restaurant.name,
                                                  order.requested_delivery_date, order.supplier.phone_number)
@@ -24,26 +24,26 @@ def send_whatsapp_notifications(order):
         send_order_updatee_notification(order.id, order.amount, order.status, order.supplier.name, None,
                                         order.restaurant.phone_number)
         # -- Supplier notification
-        send_order_updater_notification(order.status, order.id, order.amount,
-                                        order.restaurant.name, vendor_order_url, order.supplier.phone_number)
-    elif order.status == Order.CHECKED_IN:
-        # Restaurant checked in the order
-        # -- Restaurant notification
-        send_order_updater_notification(order.status, order.id, order.amount_checked_in, order.supplier.name, None,
-                                        order.restaurant.phone_number)
-        # -- Supplier notification
-        send_order_updatee_notification(order.id, order.amount_checked_in, order.status,
-                                        order.restaurant.name, vendor_order_url, order.supplier.phone_number)
-    elif order.status == Order.DELIVERED:
-        # Restaurant marked the order as finalized
-        # -- Restaurant notification
-        status = "finalized"
-        send_order_updater_notification(status, order.id, order.amount_checked_in, order.supplier.name, None,
-                                        order.restaurant.phone_number)
-        # -- Supplier notification
-        status_supplier = "marked delivered"
-        send_order_updatee_notification(order.id, order.amount_checked_in, status_supplier, order.restaurant.name, vendor_order_url,
-                                        order.supplier.phone_number)
+        # send_order_updater_notification(order.status, order.id, order.amount,
+        #                                 order.restaurant.name, vendor_order_url, order.supplier.phone_number)
+    # elif order.status == Order.CHECKED_IN:
+    #     # Restaurant checked in the order
+    #     # -- Restaurant notification
+    #     send_order_updater_notification(order.status, order.id, order.amount_checked_in, order.supplier.name, None,
+    #                                     order.restaurant.phone_number)
+    #     # -- Supplier notification
+    #     send_order_updatee_notification(order.id, order.amount_checked_in, order.status,
+    #                                     order.restaurant.name, vendor_order_url, order.supplier.phone_number)
+    # elif order.status == Order.DELIVERED:
+    #     # Restaurant marked the order as finalized
+    #     # -- Restaurant notification
+    #     status = "finalized"
+    #     send_order_updater_notification(status, order.id, order.amount_checked_in, order.supplier.name, None,
+    #                                     order.restaurant.phone_number)
+    #     # -- Supplier notification
+    #     status_supplier = "marked delivered"
+    #     send_order_updatee_notification(order.id, order.amount_checked_in, status_supplier, order.restaurant.name, vendor_order_url,
+    #                                     order.supplier.phone_number)
 
 
 def send_order_created_restaurant_notification(order_id, amount, supplier_name, delivery_date, send_to_number):
