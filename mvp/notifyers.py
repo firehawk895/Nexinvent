@@ -9,15 +9,18 @@ def send_whatsapp_notifications(order):
     Logic flow depends on the fact that we can determine the order placer and the order placee based on order status
     :return:
     """
-    vendor_order_url = settings.FRONT_END_BASE_URL + "vendors/orders/" + str(order.id)
+    # vendor_order_url = settings.FRONT_END_BASE_URL + "vendors/orders/" + str(order.id)
+    callback_url = settings.BACK_END_BASE_URL + "whatsapp-status/?order_id=" + str(order.id)
+
     if order.status == Order.SUBMITTED:
         # New order got created by the restaurant
         # -- Restaurant notification
         # send_order_created_restaurant_notification(order.id, order.amount, order.supplier.name,
         #                                            order.requested_delivery_date, order.restaurant.phone_number)
         # -- Supplier notification
-        send_order_created_supplier_notification(order.id, order.amount, order.restaurant.name,
-                                                 order.requested_delivery_date, order.supplier.phone_number)
+        send_order_created_supplier_notification(
+            order.id, order.amount, order.restaurant.name,
+            order.requested_delivery_date, order.supplier.phone_number, callback_url)
     elif order.status == Order.ACCEPTED or order.status == Order.REJECTED:
         # Supplier accepted or rejected the order
         # -- Restaurant notification
@@ -46,7 +49,7 @@ def send_whatsapp_notifications(order):
     #                                     order.supplier.phone_number)
 
 
-def send_order_created_restaurant_notification(order_id, amount, supplier_name, delivery_date, send_to_number):
+def send_order_created_restaurant_notification(order_id, amount, supplier_name, delivery_date, send_to_number, callback_url=None):
     """
     Represents the whats app template:
     template_5:
@@ -67,7 +70,7 @@ def send_order_created_restaurant_notification(order_id, amount, supplier_name, 
     send_whatsapp(send_to_number, message)
 
 
-def send_order_created_supplier_notification(order_id, amount, restaurant_name, delivery_date, send_to_number):
+def send_order_created_supplier_notification(order_id, amount, restaurant_name, delivery_date, send_to_number, callback_url=None):
     """
     Represents the whats app template:
     template_2:
@@ -88,10 +91,10 @@ def send_order_created_supplier_notification(order_id, amount, restaurant_name, 
     message = "New order received from {}, order #{}, Amount: ₹ {}. Requested Delivery date : {}. \nTo Accept/Reject click {}".format(
         restaurant_name, order_id, amount,
         delivery_date, url)
-    send_whatsapp(send_to_number, message)
+    send_whatsapp(send_to_number, message, callback_url)
 
 
-def send_order_updater_notification(action, order_id, amount, updatee_name, url, send_to_number):
+def send_order_updater_notification(action, order_id, amount, updatee_name, url, send_to_number, callback_url=None):
     """
     Represents the whats app template:
     template_4:
@@ -109,10 +112,10 @@ def send_order_updater_notification(action, order_id, amount, updatee_name, url,
     action = "*" + action + "*"
     updatee_name = "*" + updatee_name + "*"
     message = "Order Update: You have {} order {} of Amount ₹{} for {}. \nDetails: {}".format(action, order_id, amount, updatee_name, url)
-    send_whatsapp(send_to_number, message)
+    send_whatsapp(send_to_number, message, callback_url)
 
 
-def send_order_updatee_notification(order_id, amount, action, updater_name, url, send_to_number):
+def send_order_updatee_notification(order_id, amount, action, updater_name, url, send_to_number, callback_url=None):
     """
     Represents the whats app template:
     template_3:
@@ -130,4 +133,4 @@ def send_order_updatee_notification(order_id, amount, action, updater_name, url,
     action = "*" + action + "*"
     updater_name = "*" + updater_name + "*"
     message = "Order Update: Order #{} of Amount ₹{} has been {} by {}. \nOrder Details: {}".format(order_id, amount, action, updater_name, url)
-    send_whatsapp(send_to_number, message)
+    send_whatsapp(send_to_number, message, callback_url)

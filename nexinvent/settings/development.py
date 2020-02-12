@@ -29,6 +29,9 @@ DATABASES = {
 }
 
 FRONT_END_BASE_URL = "http://localhost:3000/"
+# much simpler to specify it manually than using django sites module
+# used by twilio currently, good place to put your ngrok base url
+BACK_END_BASE_URL = "http://example.com/"
 
 TWILIO = {
     'SID': '',

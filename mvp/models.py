@@ -114,6 +114,8 @@ class Order(TimeStampable, models.Model):
     comment = models.CharField(max_length=1024, blank=True)
     invoice_no = models.CharField(max_length=256, blank=True)
     checked_in_at = models.DateTimeField(null=True)
+    whatsapp_status = models.CharField(blank=True, max_length=15)
+    whatsapp_timestamp = models.DateTimeField(blank=True, null=True)
 
 
 class OrderItem(TimeStampable, models.Model):

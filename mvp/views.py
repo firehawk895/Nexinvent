@@ -15,7 +15,8 @@ from .models import Order, Product, Cart, OrderItem
 
 from .serializers import OrderSerializer, OrderSerializerPatch, OrderInstanceSerializer, ProductSerializer, \
     CartSerializer, OrderItemSerializer, \
-    CartSerializerPatch, CartSerializerPost, CartSerializerDeleteSupplierWise, SendOrderSerializer, CheckinSerializer
+    CartSerializerPatch, CartSerializerPost, CartSerializerDeleteSupplierWise, SendOrderSerializer, CheckinSerializer, \
+    TwilioStatusCallBackSerializer
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -146,3 +147,23 @@ class CartViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.perform_delete()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+def whatsapp_status(request):
+    """
+    API endpoint for twilio messaging service's callback to hit
+    :param request:
+    :return:
+    """
+    # request.query_params and request.data is type QueryDict
+    # making mutable copies of them and merging them, ** notation returns OrderedDict
+    # which doesn't work with the serializer
+    body = request.data.copy()
+    merged_query_dict = request.query_params.copy()
+    merged_query_dict.update(body)
+
+    serializer = TwilioStatusCallBackSerializer(data=merged_query_dict)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(raise_exception=True)
+    return Response({}, status=status.HTTP_202_ACCEPTED)

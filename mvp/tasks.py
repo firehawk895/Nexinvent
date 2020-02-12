@@ -5,7 +5,7 @@ app = Celery('mvp', broker='pyamqp://guest@localhost//')
 
 
 @app.task
-def send_whatsapp(mobile_no, message):
+def send_whatsapp(mobile_no, message, status_callback=None):
     account_sid = settings.TWILIO['SID']
     auth_token = settings.TWILIO['AUTH_TOKEN']
     client = Client(account_sid, auth_token)
@@ -14,6 +14,7 @@ def send_whatsapp(mobile_no, message):
     message = client.messages.create(
         from_='whatsapp:+18335800088',
         body=message,
-        to=to
+        to=to,
+        status_callback=status_callback
     )
     print(message.sid)

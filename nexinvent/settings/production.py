@@ -57,3 +57,5 @@ SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 FRONT_END_BASE_URL = os.environ['FRONT_END_BASE_URL']
+# much simpler to specify it manually than using django sites module
+BACK_END_BASE_URL = os.environ['BACK_END_BASE_URL']

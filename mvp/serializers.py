@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.settings import api_settings
 from rest_framework.validators import UniqueTogetherValidator
@@ -19,7 +20,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ('status', 'id', 'supplier', 'created_at', 'requested_delivery_date', 'amount',
-                  'invoice_no', 'restaurant', 'amount_checked_in')
+                  'invoice_no', 'restaurant', 'amount_checked_in', 'whatsapp_status')
         depth = 1
 
 
@@ -222,3 +223,74 @@ class CartSerializerDeleteSupplierWise(serializers.Serializer):
     def perform_delete(self):
         for supplier in self.validated_data["supplier_list"]:
             Cart.objects.remove_supplier_cart(self.validated_data["restaurant"], supplier)
+
+
+class TwilioStatusCallBackSerializer(serializers.Serializer):
+    """
+    Twilio posts with the following known info:
+    {
+        "sid": "SM4262411b90e5464b98a4f66a49c57a97",
+        "date_created": "Wed, 07 Feb 2018 17:46:52 +0000",
+        "date_updated": "Wed, 07 Feb 2018 17:46:52 +0000",
+        "date_sent": null,
+        "account_sid": "AC0db966d80e9f1662da09c61287f8bba1",
+        "to": "+15622089096",
+        "from": null,
+        "messaging_service_sid": "MG4d9d720b38f7892254869fabdca51e69",
+        "body": "Test",
+        "status": "accepted",
+        "num_segments": "0",
+        "num_media": "0",
+        "direction": "outbound-api",
+        "api_version": "2010-04-01",
+        "price": null,
+        "price_unit": null,
+        "error_code": null,
+        "error_message": null,
+        "uri": "/2010-04-01/Accounts/AC0db966d80e9f1662da09c61287f8bba1/Messages/SM4262411b90e5464b98a4f66a49c57a97.json",
+        "subresource_uris": {
+            "media": "/2010-04-01/Accounts/AC0db966d80e9f1662da09c61287f8bba1/Messages/SM4262411b90e5464b98a4f66a49c57a97/Media.json"
+        }
+    }
+    Source: https://www.twilio.com/docs/sms/outbound-message-logging
+
+    The serializer field would have been
+    date_created = serializers.CharField(allow_blank=False)
+
+    The validator for this field would have been:
+    def validate_date_created(self, value):
+        # API comes with unnecessary quotes that need to be stripped before conversion
+        # format source - https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
+        # iso8601 - https://docs.python.org/2/library/datetime.html#datetime.date.isoformat
+        return datetime.strptime(value.strip("\""), "%a, %d %b %Y %H:%M:%S %z")
+
+    But after hitting the API, this is the actual info twilio is sending:
+    {
+        'EventType': 'DELIVERED',
+        'SmsSid': 'SM86443ea315c64efc8c0bf852915593ae',
+        'SmsStatus': 'delivered',
+        'MessageStatus': 'delivered',
+        'ChannelToAddress': '+919643713143',
+        'To': 'whatsapp:+919643713143',
+        'ChannelPrefix': 'whatsapp',
+        'MessageSid': 'SM86443ea315c64efc8c0bf852915593ae',
+        'AccountSid': 'AC0358dd1e2e26a0f0a98a3b52532d9ae2',
+        'From': 'whatsapp:+18443112326',
+        'ApiVersion': '2010-04-01',
+        'ChannelInstallSid': 'XE6b1386f816ea573d2a23dfc8dc2f1dbb'
+    }
+    """
+    MessageStatus = serializers.CharField(allow_blank=False)
+    # TODO: Someday make the saving generic by taking model name and primary key or fire an event
+    # the order id
+    order_id = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all())
+
+    def save(self, **kwargs):
+        d = self.validated_data
+
+        order = d["order_id"]
+        order.whatsapp_status = d["MessageStatus"]
+        # unfortunately there is no timestamp from twilio, so adding a close estimation
+        order.whatsapp_timestamp = timezone.now()
+        order.save()
+
