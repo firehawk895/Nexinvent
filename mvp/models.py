@@ -140,6 +140,12 @@ class OrderItem(TimeStampable, models.Model):
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     note = models.TextField(blank=True)
     comment = models.CharField(max_length=1024, blank=True)
+    # these are the fields that are denormalized from product
+    name = models.CharField(max_length=256)
+    sku = models.CharField(max_length=256)
+    unit = models.CharField(max_length=128)
+    description = models.CharField(max_length=512, blank=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
 
 
 class Cart(TimeStampable, models.Model):
