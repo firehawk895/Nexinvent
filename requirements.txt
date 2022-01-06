@@ -2,7 +2,7 @@ appnope==0.1.0
 backcall==0.1.0
 boto3==1.9.77
 botocore==1.12.77
-celery==4.3.0
+celery==5.2.2
 certifi==2018.11.29
 chardet==3.0.4
 coreapi==2.3.3
